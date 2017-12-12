@@ -1,0 +1,13 @@
+servers:
+  - name: test1
+    host: www.baidu.com
+    ip: 127.0.0.1
+    port: 22
+    user: work
+    key: /Users/luopengift/.ssh/id.rsa
+  - name: test2
+    host: www.qq.com
+    ip: 27.0.0.2
+    port: 36000
+    user: centos
+    pass: "1233456"

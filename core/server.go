@@ -57,4 +57,14 @@ func (s *ServerList) Add(name, host, ip string, port int, user, password, key st
 	return nil
 }
 
+func (s *ServerList) ConsoleAdd() {
+	input := ""
+	endpoint := ssh.NewEndpoint()
+	fmt.Printf("输入主机名称[%v]: ", s.Global)
+	fmt.Scanln(&input)
+	s.Global.Name = input
+	fmt.Println(endpoint)
+
+}
+
 

@@ -45,11 +45,22 @@ func Exec() error {
 		switch input {
 		case "":
 			continue
+		case "add":
+			serverList.ConsoleAdd()
+		case "show":
+			continue
+		case "dump":
+			continue
 		case "q", "quit", "exit":
 			fmt.Println("exit...")
 			return nil
 		case "h", "help":
-			fmt.Println("help")
+			fmt.Println("help....")
+			fmt.Println("q|quit|exit: 退出")
+			fmt.Println("dump: 存储配置文件")
+			fmt.Println("add: 新增一台主机")
+			fmt.Println("rm: 删除一台主机")
+			fmt.Println()
 		default:
 			if strings.HasPrefix(input, "/") {
 				result := serverList.Search(strings.Trim(input, "/"))

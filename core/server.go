@@ -1,12 +1,11 @@
 package core
 
 import (
-	"github.com/luopengift/golibs/ssh"
 	"fmt"
+	"github.com/luopengift/golibs/ssh"
 	"strconv"
 	"strings"
 )
-
 
 type ServerList struct {
 	Global  *ssh.Endpoint   `yaml:"global"`
@@ -14,11 +13,28 @@ type ServerList struct {
 	result  []*ssh.Endpoint
 }
 
+func (s *ServerList) UseGlobalValues() {
+	for _, endpoint := range s.Servers {
+		if endpoint.Port == 0 {
+			endpoint.Port = s.Global.Port
+		}
+		if endpoint.User == "" {
+			endpoint.User = s.Global.User
+		}
+		if endpoint.Password == "" {
+			endpoint.Password = s.Global.Password
+		}
+		if endpoint.Key == "" {
+			endpoint.Key = s.Global.Key
+		}
+	}
+}
+
 func (s *ServerList) Println() {
 	fmt.Println("==================================")
-	fmt.Println(fmt.Sprintf("序号\t名称\t主机\tIP\t端口"))
+	fmt.Println(fmt.Sprintf("序号\t名称\tIP\t端口"))
 	for index, endpoint := range s.result {
-		item := fmt.Sprintf("%v\t%v\t%v\t%v\t%v", index, endpoint.Name, endpoint.Host, endpoint.Ip, endpoint.Port)
+		item := fmt.Sprintf("%v\t%v\t%v\t%v", index, endpoint.Name, endpoint.Ip, endpoint.Port)
 		fmt.Println(item)
 	}
 	fmt.Println("==================================")
@@ -60,11 +76,35 @@ func (s *ServerList) Add(name, host, ip string, port int, user, password, key st
 func (s *ServerList) ConsoleAdd() {
 	input := ""
 	endpoint := ssh.NewEndpoint()
-	fmt.Printf("输入主机名称[%v]: ", s.Global)
+	fmt.Printf("输入主机名称[" + s.Global.Name + "]: ")
 	fmt.Scanln(&input)
-	s.Global.Name = input
-	fmt.Println(endpoint)
+	endpoint.Name = input
+
+	fmt.Println("输入主机地址: ")
+	fmt.Scanln(&input)
+	endpoint.Host = input
+
+	fmt.Println("输入IP地址: ")
+	fmt.Scanln(&input)
+	endpoint.Ip = input
+
+	fmt.Println("输入端口: ")
+	fmt.Scanln(&input)
+	endpoint.Port = 22
+
+	fmt.Println("输入用户名: ")
+	fmt.Scanln(&input)
+	endpoint.User = input
+
+	fmt.Println("输入密码: ")
+	fmt.Scanln(&input)
+	endpoint.Password = input
+
+	fmt.Println("输入证书: ")
+	fmt.Scanln(&input)
+	endpoint.Key = input
+
+	s.Servers = append(s.Servers, endpoint)
+	s.result = append(s.result, endpoint)
 
 }
-
-

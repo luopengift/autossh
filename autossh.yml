@@ -1,13 +1,14 @@
-servers:
-  - name: test1
-    host: www.baidu.com
-    ip: 127.0.0.1
+global:
     port: 22
-    user: work
-    key: /Users/luopengift/.ssh/id.rsa
-  - name: test2
-    host: www.qq.com
-    ip: 27.0.0.2
-    port: 36000
-    user: centos
-    pass: "1233456"
+    user: root
+    key: /root/.ssh/luopengift.rsa
+servers:
+  - name: vpn
+    ip: vpn.luopengift.com
+    user: luopengift
+  - name: vpc001
+    ip: vpc001.luopengift.com
+  - name: vpc002
+    ip: vpc002.luopengift.com
+  - name: vpc003
+    ip: vpc003.luopengift.com

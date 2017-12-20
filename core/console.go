@@ -2,48 +2,39 @@ package core
 
 import (
 	"fmt"
-	"github.com/luopengift/types"
-	"os"
-	//	"syscall"
-	"bufio"
+	"github.com/luopengift/autossh/version"
+	"github.com/luopengift/golibs/logger"
 	"strings"
 	"time"
 )
 
-func Exec() error {
-
-	serverList := &ServerList{}
-	err := types.ParseConfigFile("autossh.yml", serverList)
-	if err != nil {
-		return err
-	}
-	serverList.UseGlobalValues()
-	serverList.Reset()
-	stdin := bufio.NewReader(os.Stdin)
+func StartConsole(serverList *ServerList) error {
+	//stdin := bufio.NewReader(os.Stdin)
 	var input string
 	for {
-		fmt.Println("Autossh...", time.Now().Format("2006/01/02 15:04:05"))
+		logger.Info("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 		serverList.Println()
 		//os.Stdin = os.NewFile(uintptr(syscall.Stdin), "/dev/stdin")
 		fmt.Printf("输入需要登录的服务器: ")
 		//var input string
-		//n, err := fmt.Scanf("%s\n", &input)
+		n, err := fmt.Scanln(&input)
+		if err != nil {
+			logger.Error("input error: %v, %v", n, err)
+			continue
+		}
+		//fmt.Println("%v,%v", input, n)
 		//n, err := fmt.Fscanf(os.Stdin, "%s", &input)
 		//inputReader := bufio.NewReader(os.Stdin)
 		//input, err := inputReader.ReadString('\n')
 		//input = strings.Trim(input, "\n")
-		fmt.Fscan(stdin, &input)
-		stdin.ReadString('\n')
+		//fmt.Fscan(stdin, &input)
+		//stdin.ReadString('\n')
 
-		if err != nil {
-			fmt.Println(">>", input, err)
-		}
-		fmt.Println("==|" + input + "|==")
 		switch input {
 		case "":
 			continue
 		case "-v", "-version":
-			fmt.Println("v0.0.1_121617_beta")
+			fmt.Println(version.VERSION)
 		case "add":
 			serverList.ConsoleAdd()
 		case "show":

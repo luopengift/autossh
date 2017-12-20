@@ -1,14 +1,14 @@
 global:
     port: 22
     user: root
-    key: /root/.ssh/luopengift.rsa
+    key: /root/.ssh/id.rsa
 servers:
-  - name: vpn
-    ip: vpn.luopengift.com
+  - name: 001
+    ip: 001.luopengift.com
     user: luopengift
-  - name: vpc001
-    ip: vpc001.luopengift.com
-  - name: vpc002
-    ip: vpc002.luopengift.com
-  - name: vpc003
-    ip: vpc003.luopengift.com
+  - name: 002
+    ip: 002.luopengift.com
+  - name: 003
+    ip: 003.luopengift.com
+  - name: 004
+    ip: 004.luopengift.com

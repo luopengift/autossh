@@ -73,12 +73,13 @@ func StartConsole(serverList *ServerList) error {
 					serverList.Reset()
 				case 1:
 					err = result[0].StartTerminal()
+					fmt.Println("logout from ", result[0].Ip)
 					serverList.Reset()
 					return err
 				}
 			}
 		}
-		fmt.Println("end=", err)
+		//fmt.Println("end=", err)
 	}
 	return nil
 }

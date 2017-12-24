@@ -3,6 +3,7 @@ package modules
 import (
 	"context"
 	"github.com/luopengift/golibs/ssh"
+	"github.com/luopengift/types"
 )
 
 // fetch - Fetches a file from remote nodes
@@ -12,11 +13,15 @@ type Fetch struct {
 }
 
 func (mod *Fetch) Init(cmd string) error {
-	return nil
+	args, err := parseArgs(cmd)
+	if err != nil {
+		return err
+	}
+	return types.Format(args, mod)
 }
 
 func (mod *Fetch) Name() string {
-	return "copy"
+	return "fetch"
 }
 
 func (mod *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {

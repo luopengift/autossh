@@ -11,10 +11,6 @@ import (
 	"time"
 )
 
-var (
-	startTime = time.Now()
-)
-
 type Batch struct {
 	fail    int
 	succ    int
@@ -22,7 +18,7 @@ type Batch struct {
 	mutex   *sync.Mutex
 	workers *channel.Channel
 	results *channel.Channel
-	quit	chan bool
+	quit    chan bool
 }
 
 func NewBatch(fork, timeout int) *Batch {
@@ -33,7 +29,7 @@ func NewBatch(fork, timeout int) *Batch {
 	batch.mutex = new(sync.Mutex)
 	batch.workers = channel.NewChannel(fork)
 	batch.results = channel.NewChannel(fork)
-	batch.quit	= make(chan bool)
+	batch.quit = make(chan bool)
 	return batch
 }
 
@@ -44,6 +40,7 @@ type Result struct {
 }
 
 func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
+	startTime := time.Now()
 	module, ok := modules.Modules[mod]
 	if !ok {
 		return fmt.Errorf("module missing: %v", mod)
@@ -66,7 +63,7 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 
 	for _, endpoint := range servers {
 		b.workers.Add()
-		go func(ctx context.Context,endpoint *ssh.Endpoint) {
+		go func(ctx context.Context, endpoint *ssh.Endpoint) {
 			result := Result{Addr: endpoint.Ip}
 			result.Out, result.Err = module.Run(ctx, endpoint)
 			b.results.Put(result)
@@ -76,9 +73,9 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 	format := "[主机数量]:%d, [成功]:%d, [失败]:%d, [超时]:%d|[执行时间]:%s"
 	select {
 	case <-ctx.Done():
-		logger.Warn(format, len(servers), b.succ, b.fail, len(servers) - b.succ - b.fail, time.Since(startTime).String())
-	case <- b.quit:
-		logger.Info(format, len(servers), b.succ, b.fail, len(servers) - b.succ - b.fail, time.Since(startTime).String())
+		logger.Warn(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
+	case <-b.quit:
+		logger.Info(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
 
 	}
 	return nil

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/luopengift/autossh/core"
-	"github.com/luopengift/golibs/logger"
 	"github.com/luopengift/golibs/ssh"
 	"github.com/luopengift/types"
 	"os"
@@ -20,7 +19,7 @@ func Exec() error {
 		}
 		serverList.UseGlobalValues()
 		serverList.Reset()
-		core.StartConsole(serverList)
+		return core.StartConsole(serverList)
 	default: //batach模式
 		params := NewParams()
 		for _, ip := range params.Hosts {
@@ -28,9 +27,7 @@ func Exec() error {
 			serverList.Servers = append(serverList.Servers, endpoint)
 		}
 		batch := core.NewBatch(params.Fork, params.Timeout)
-		if batch.Execute(serverList.Servers, params.Module, params.Args); err != nil {
-			logger.Error("%v", err)
-		}
+		return batch.Execute(serverList.Servers, params.Module, params.Args)
 	}
 	return nil
 }

@@ -1,12 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"github.com/luopengift/golibs/logger"
 	"github.com/luopengift/autossh/cmd"
 )
 
 func main() {
+	logger.SetTimeFormat("")
+	logger.SetLevel(logger.NULL)
 	if err := cmd.Exec(); err != nil {
-		fmt.Println(err)
+		logger.Error("%v", err)
 	}
 }

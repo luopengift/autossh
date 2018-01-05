@@ -23,7 +23,7 @@ func getInput() (string, error) {
 
 func StartConsole(serverList *ServerList) error {
 	for {
-		logger.Info("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
+		logger.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 		serverList.Println()
 		input, err := getInput()
 		if err != nil {

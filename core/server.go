@@ -32,9 +32,9 @@ func (s *ServerList) UseGlobalValues() {
 
 func (s *ServerList) Println() {
 	fmt.Println("==================================")
-	fmt.Println(fmt.Sprintf("序号\t名称\tIP\t端口"))
+	fmt.Println(fmt.Sprintf("%-4s\t%-10s\t%-30s\t%-5s","序号", "名称", "IP","端口"))
 	for index, endpoint := range s.result {
-		item := fmt.Sprintf("%v\t%v\t%v\t%v", index, endpoint.Name, endpoint.Ip, endpoint.Port)
+		item := fmt.Sprintf("%-4d\t%-10s\t%-30s\t%-5d", index, endpoint.Name, endpoint.Ip, endpoint.Port)
 		fmt.Println(item)
 	}
 	fmt.Println("==================================")

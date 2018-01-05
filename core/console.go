@@ -55,6 +55,7 @@ func StartConsole(serverList *ServerList) error {
 			//fmt.Println("rm: 删除一台主机")
 			fmt.Println("\n")
 		default:
+			logger.Warn("查询[%s]中,请稍后...", input)
 			var result []*ssh.Endpoint
 			switch input[0] {
 			case '/':
@@ -65,6 +66,7 @@ func StartConsole(serverList *ServerList) error {
 
 			switch len(result) {
 			case 1:
+				fmt.Println("正在登录", result[0].Ip)
 				err = result[0].StartTerminal()
 				serverList.Reset()
 				return err

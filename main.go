@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/luopengift/golibs/logger"
 	"github.com/luopengift/autossh/cmd"
+	"github.com/luopengift/golibs/logger"
 )
 
 func main() {

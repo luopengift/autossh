@@ -2,13 +2,12 @@ package main
 
 import (
 	"github.com/luopengift/autossh/cmd"
-	"github.com/luopengift/golibs/logger"
+	"github.com/luopengift/log"
 )
 
 func main() {
-	logger.SetTimeFormat("")
-	logger.SetLevel(logger.NULL)
+	log.GetLogger("__ROOT__").SetFormatter(log.NewTextFormat("MESSAGE", 1))
 	if err := cmd.Exec(); err != nil {
-		logger.Error("%v", err)
+		log.Error("%v", err)
 	}
 }

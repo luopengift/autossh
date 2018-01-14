@@ -3,7 +3,7 @@ package modules
 import (
 	"context"
 	"github.com/luopengift/golibs/ssh"
-	//"github.com/luopengift/golibs/logger"
+	//"github.com/luopengift/golibs/log"
 )
 
 // Execute commands in nodes.

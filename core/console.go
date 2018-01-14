@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/luopengift/autossh/version"
-	"github.com/luopengift/golibs/logger"
 	"github.com/luopengift/golibs/ssh"
+	"github.com/luopengift/log"
 	"os"
 	"strings"
 	"time"
@@ -23,11 +23,11 @@ func getInput() (string, error) {
 
 func StartConsole(serverList *ServerList) error {
 	for {
-		logger.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
+		log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 		serverList.Println()
 		input, err := getInput()
 		if err != nil {
-			logger.Error("input error: %v, %v", input, err)
+			log.Error("input error: %v, %v", input, err)
 			continue
 		}
 		fmt.Println("searching...")
@@ -55,7 +55,7 @@ func StartConsole(serverList *ServerList) error {
 			//fmt.Println("rm: 删除一台主机")
 			fmt.Println("\n")
 		default:
-			logger.Warn("查询[%s]中,请稍后...", input)
+			log.Warn("查询[%s]中,请稍后...", input)
 			var result []*ssh.Endpoint
 			switch input[0] {
 			case '/':

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/luopengift/autossh/modules"
 	"github.com/luopengift/golibs/channel"
-	"github.com/luopengift/golibs/logger"
 	"github.com/luopengift/golibs/ssh"
+	"github.com/luopengift/log"
 	"sync"
 	"time"
 )
@@ -22,8 +22,6 @@ type Batch struct {
 }
 
 func NewBatch(fork, timeout int) *Batch {
-	logger.SetTimeFormat("")
-	logger.SetLevel(logger.NULL)
 	batch := new(Batch)
 	batch.timeout = timeout
 	batch.mutex = new(sync.Mutex)
@@ -73,9 +71,9 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 	format := "[主机数量]:%d, [成功]:%d, [失败]:%d, [超时]:%d|[执行时间]:%s"
 	select {
 	case <-ctx.Done():
-		logger.Warn(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
+		log.Warn(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
 	case <-b.quit:
-		logger.Info(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
+		log.Info(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
 
 	}
 	return nil
@@ -84,9 +82,9 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 func (b *Batch) displayResult(no int64, result Result) {
 	if result.Err != nil {
 		b.fail += 1
-		logger.Error("[%d] %s | %s =>\n%s", no, result.Addr, "FAIL", string(result.Out)+result.Err.Error())
+		log.Error("[%d] %s | %s =>\n%s", no, result.Addr, "FAIL", string(result.Out)+result.Err.Error())
 	} else {
 		b.succ += 1
-		logger.Info("[%d] %s | %s =>\n%s", no, result.Addr, "SUCC", string(result.Out))
+		log.Info("[%d] %s | %s =>\n%s", no, result.Addr, "SUCC", string(result.Out))
 	}
 }

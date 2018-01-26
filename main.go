@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	log.GetLogger("__ROOT__").SetFormatter(log.NewTextFormat("MESSAGE", 1))
+	log.GetLogger("__ROOT__").SetFormatter(log.NewTextFormat("MESSAGE", log.ModeColor))
 	if err := cmd.Exec(); err != nil {
 		log.Error("%v", err)
 	}

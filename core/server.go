@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/luopengift/golibs/ssh"
+	"github.com/luopengift/log"
 	"strconv"
 	"strings"
 )
@@ -31,10 +32,10 @@ func (s *ServerList) UseGlobalValues() {
 }
 
 func (s *ServerList) Println() {
-	fmt.Println(fmt.Sprintf("%-4s\t%-20s\t%-40s\t%-5s", "序号", "名称", "IP", "端口"))
+	log.ConsoleWithGreen(fmt.Sprintf("%-4s\t%-20s\t%-40s\t%-5s", "序号", "名称", "IP", "端口"))
 	for index, endpoint := range s.result {
 		item := fmt.Sprintf("%-4d\t%-20s\t%-40s\t%-5d", index, endpoint.Name, endpoint.Ip, endpoint.Port)
-		fmt.Println(item)
+		log.ConsoleWithGreen(item)
 	}
 }
 
@@ -78,27 +79,27 @@ func (s *ServerList) ConsoleAdd() {
 	fmt.Scanln(&input)
 	endpoint.Name = input
 
-	fmt.Println("输入主机地址: ")
+	log.ConsoleWithGreen("输入主机地址: ")
 	fmt.Scanln(&input)
 	endpoint.Host = input
 
-	fmt.Println("输入IP地址: ")
+	log.ConsoleWithGreen("输入IP地址: ")
 	fmt.Scanln(&input)
 	endpoint.Ip = input
 
-	fmt.Println("输入端口: ")
+	log.ConsoleWithGreen("输入端口: ")
 	fmt.Scanln(&input)
 	endpoint.Port = 22
 
-	fmt.Println("输入用户名: ")
+	log.ConsoleWithGreen("输入用户名: ")
 	fmt.Scanln(&input)
 	endpoint.User = input
 
-	fmt.Println("输入密码: ")
+	log.ConsoleWithGreen("输入密码: ")
 	fmt.Scanln(&input)
 	endpoint.Password = input
 
-	fmt.Println("输入证书: ")
+	log.ConsoleWithGreen("输入证书: ")
 	fmt.Scanln(&input)
 	endpoint.Key = input
 

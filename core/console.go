@@ -12,7 +12,7 @@ import (
 )
 
 func getInput() (string, error) {
-	fmt.Printf("输入需要登录的服务器: ")
+	fmt.Fprintf(os.Stderr, "输入需要登录的服务器: ")
 	inputReader := bufio.NewReader(os.Stdin)
 	input, err := inputReader.ReadString('\n')
 	if err != nil {
@@ -30,12 +30,12 @@ func StartConsole(serverList *ServerList) error {
 			log.Error("input error: %v, %v", input, err)
 			continue
 		}
-		fmt.Println("searching...")
+		log.ConsoleWithGreen("searching...")
 		switch input {
 		case "":
 			continue
 		case "-v", "-version":
-			fmt.Println(version.VERSION)
+			log.ConsoleWithGreen(version.VERSION)
 		case "add":
 			serverList.ConsoleAdd()
 		case "show":
@@ -43,17 +43,17 @@ func StartConsole(serverList *ServerList) error {
 		case "dump":
 			continue
 		case "q", "quit", "exit":
-			fmt.Println("exit...")
+			log.ConsoleWithGreen("exit...")
 			return nil
 		case "h", "help":
-			fmt.Println("help....")
-			fmt.Println("输入序号/名称/IP地址均可")
-			fmt.Println("以'/'开头表示查询")
-			fmt.Println("q|quit|exit: 退出")
-			//fmt.Println("dump: 存储配置文件")
-			//fmt.Println("add: 新增一台主机")
-			//fmt.Println("rm: 删除一台主机")
-			fmt.Println("\n")
+			log.ConsoleWithGreen("help....")
+			log.ConsoleWithGreen("输入序号/名称/IP地址均可")
+			log.ConsoleWithGreen("以'/'开头表示查询")
+			log.ConsoleWithGreen("q|quit|exit: 退出")
+			//log.ConsoleWithGreen("dump: 存储配置文件")
+			//log.ConsoleWithGreen("add: 新增一台主机")
+			//log.ConsoleWithGreen("rm: 删除一台主机")
+			log.ConsoleWithGreen("\n")
 		default:
 			log.Warn("查询[%s]中,请稍后...", input)
 			var result []*ssh.Endpoint
@@ -66,7 +66,7 @@ func StartConsole(serverList *ServerList) error {
 
 			switch len(result) {
 			case 1:
-				fmt.Println("正在登录", result[0].Ip)
+				log.ConsoleWithGreen("正在登录 %v", result[0].Ip)
 				err = result[0].StartTerminal()
 				serverList.Reset()
 				return err
@@ -74,7 +74,7 @@ func StartConsole(serverList *ServerList) error {
 				serverList.Reset()
 			}
 		}
-		//fmt.Println("end=", err)
+		//log.ConsoleWithGreen("end=%v", err)
 	}
 	return nil
 }

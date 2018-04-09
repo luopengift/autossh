@@ -25,7 +25,7 @@ func (mod *Fetch) Name() string {
 }
 
 func (mod *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	return endpoint.Download(mod.Src, mod.Dest)
+	return nil, endpoint.Download(mod.Src, mod.Dest)
 }
 
 func init() {

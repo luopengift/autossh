@@ -25,7 +25,7 @@ func (mod *Copy) Init(cmd string) error {
 }
 
 func (mod *Copy) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	return endpoint.Upload(mod.Src, mod.Dest)
+	return nil, endpoint.Upload(mod.Src, mod.Dest)
 }
 
 func init() {

@@ -38,7 +38,7 @@ func (s *ServerList) UseGlobalValues() {
 func (s *ServerList) println() {
 	log.ConsoleWithGreen(fmt.Sprintf("%-4s\t%-20s\t%-40s\t%-5s", "序号", "名称", "IP", "端口"))
 	for index, endpoint := range s.result {
-		item := fmt.Sprintf("%-4d\t%-20s\t%-40s\t%-5d", index, endpoint.Name, endpoint.Ip, endpoint.Port)
+		item := fmt.Sprintf("%-4d\t%-20s\t%-40s\t%-5d", index, endpoint.Name, endpoint.IP, endpoint.Port)
 		log.ConsoleWithGreen(item)
 	}
 }
@@ -53,7 +53,7 @@ func (s *ServerList) Reset() []*ssh.Endpoint {
 func (s *ServerList) Match(match string) []*ssh.Endpoint {
 	result := []*ssh.Endpoint{}
 	for index, endpoint := range s.result {
-		if match == strconv.Itoa(index) || match == endpoint.Name || match == endpoint.Host || match == endpoint.Ip {
+		if match == strconv.Itoa(index) || match == endpoint.Name || match == endpoint.Host || match == endpoint.IP {
 			result = append(result, endpoint)
 		}
 	}
@@ -65,7 +65,7 @@ func (s *ServerList) Match(match string) []*ssh.Endpoint {
 func (s *ServerList) Search(search string) []*ssh.Endpoint {
 	result := []*ssh.Endpoint{}
 	for _, endpoint := range s.result {
-		if strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.Ip, search) {
+		if strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
 			result = append(result, endpoint)
 		}
 	}
@@ -94,7 +94,7 @@ func (s *ServerList) ConsoleAdd() {
 
 	log.ConsoleWithGreen("输入IP地址: ")
 	fmt.Scanln(&input)
-	endpoint.Ip = input
+	endpoint.IP = input
 
 	log.ConsoleWithGreen("输入端口: ")
 	fmt.Scanln(&input)

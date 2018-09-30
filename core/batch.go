@@ -67,7 +67,7 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 	for _, endpoint := range servers {
 		b.workers.Add()
 		go func(ctx context.Context, endpoint *ssh.Endpoint) {
-			result := Result{Addr: endpoint.Ip}
+			result := Result{Addr: endpoint.IP}
 			result.Out, result.Err = module.Run(ctx, endpoint)
 			b.results.Put(result)
 			b.workers.Done()

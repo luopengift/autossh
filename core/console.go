@@ -68,7 +68,7 @@ func StartConsole(serverList *ServerList) error {
 
 			switch len(result) {
 			case 1:
-				log.ConsoleWithGreen("正在登录 %v", result[0].Ip)
+				log.ConsoleWithGreen("正在登录 %v", result[0].IP)
 				err = result[0].StartTerminal()
 				serverList.Reset()
 				return err

@@ -3,14 +3,16 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/luopengift/autossh/modules"
-	"github.com/luopengift/golibs/channel"
-	"github.com/luopengift/golibs/ssh"
-	"github.com/luopengift/log"
 	"sync"
 	"time"
+
+	"github.com/luopengift/autossh/modules"
+	"github.com/luopengift/golibs/channel"
+	"github.com/luopengift/log"
+	"github.com/luopengift/ssh"
 )
 
+// Batch Batch
 type Batch struct {
 	fail    int
 	succ    int
@@ -21,6 +23,7 @@ type Batch struct {
 	quit    chan bool
 }
 
+// NewBatch NewBatch
 func NewBatch(fork, timeout int) *Batch {
 	batch := new(Batch)
 	batch.timeout = timeout
@@ -31,12 +34,14 @@ func NewBatch(fork, timeout int) *Batch {
 	return batch
 }
 
+// Result Result
 type Result struct {
 	Addr string
 	Out  []byte
 	Err  error
 }
 
+// Execute Execute
 func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 	startTime := time.Now()
 	module, ok := modules.Modules[mod]
@@ -81,10 +86,10 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 
 func (b *Batch) displayResult(no int64, result Result) {
 	if result.Err != nil {
-		b.fail += 1
+		b.fail++
 		log.Error("[%d] %s | %s =>\n%s", no, result.Addr, "FAIL", string(result.Out)+result.Err.Error())
 	} else {
-		b.succ += 1
+		b.succ++
 		log.Info("[%d] %s | %s =>\n%s", no, result.Addr, "SUCC", string(result.Out))
 	}
 }

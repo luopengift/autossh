@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"flag"
-	"github.com/luopengift/golibs/file"
-	"github.com/luopengift/golibs/sys"
 	"os"
 	"strings"
+
+	"github.com/luopengift/golibs/file"
+	"github.com/luopengift/golibs/sys"
 )
 
+// Params params
 type Params struct {
 	Version  bool
 	User     string
@@ -22,6 +24,7 @@ type Params struct {
 	Args     string
 }
 
+// NewParams new params
 func NewParams() *Params {
 	version := flag.Bool("v", false, "(version)版本")
 	user := flag.String("u", sys.Username(), "(username)用户名")

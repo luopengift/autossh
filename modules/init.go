@@ -3,9 +3,11 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/luopengift/golibs/ssh"
+
+	"github.com/luopengift/ssh"
 )
 
+// Moduler
 type Moduler interface {
 	Name() string
 	Init(command string) error

@@ -1,13 +1,15 @@
 package cmd
 
 import (
-	"github.com/luopengift/autossh/core"
-	"github.com/luopengift/golibs/ssh"
-	"github.com/luopengift/types"
 	"os"
 	"path"
+
+	"github.com/luopengift/autossh/core"
+	"github.com/luopengift/ssh"
+	"github.com/luopengift/types"
 )
 
+// Exec exec
 func Exec() error {
 	var err error
 	serverList := &core.ServerList{}
@@ -29,5 +31,4 @@ func Exec() error {
 		batch := core.NewBatch(params.Fork, params.Timeout)
 		return batch.Execute(serverList.Servers, params.Module, params.Args)
 	}
-	return nil
 }

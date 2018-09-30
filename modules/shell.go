@@ -2,11 +2,11 @@ package modules
 
 import (
 	"context"
-	"github.com/luopengift/golibs/ssh"
-	//"github.com/luopengift/golibs/log"
+
+	"github.com/luopengift/ssh"
 )
 
-// Execute commands in nodes.
+// Shell Execute commands in nodes.
 type Shell struct {
 	Command string
 }

@@ -3,12 +3,13 @@ package core
 import (
 	"bufio"
 	"fmt"
-	"github.com/luopengift/autossh/version"
-	"github.com/luopengift/golibs/ssh"
-	"github.com/luopengift/log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/luopengift/log"
+	"github.com/luopengift/ssh"
+	"github.com/luopengift/version"
 )
 
 func getInput() (string, error) {
@@ -21,21 +22,21 @@ func getInput() (string, error) {
 	return input[:len(input)-1], nil
 }
 
+// StartConsole StartConsole
 func StartConsole(serverList *ServerList) error {
 	for {
 		log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
-		serverList.Println()
+		serverList.println()
 		input, err := getInput()
 		if err != nil {
 			log.Error("input error: %v, %v", input, err)
 			continue
 		}
-		log.ConsoleWithGreen("searching...")
 		switch input {
 		case "":
 			continue
 		case "-v", "-version":
-			log.ConsoleWithGreen(version.VERSION)
+			log.ConsoleWithGreen("version:%v, build time:%v, build tag:%v", version.VERSION, version.TIME, version.GIT)
 		case "add":
 			serverList.ConsoleAdd()
 		case "show":
@@ -55,6 +56,7 @@ func StartConsole(serverList *ServerList) error {
 			//log.ConsoleWithGreen("rm: 删除一台主机")
 			log.ConsoleWithGreen("\n")
 		default:
+			log.ConsoleWithGreen("searching...")
 			log.Warn("查询[%s]中,请稍后...", input)
 			var result []*ssh.Endpoint
 			switch input[0] {
@@ -76,5 +78,4 @@ func StartConsole(serverList *ServerList) error {
 		}
 		//log.ConsoleWithGreen("end=%v", err)
 	}
-	return nil
 }

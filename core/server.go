@@ -19,7 +19,7 @@ type ServerList struct {
 // UseGlobalValues UseGlobalValues
 func (s *ServerList) UseGlobalValues() {
 	for _, endpoint := range s.Servers {
-		if endpoint.Port == 0 {
+		if endpoint.Port == "" {
 			endpoint.Port = s.Global.Port
 		}
 		if endpoint.User == "" {
@@ -28,18 +28,26 @@ func (s *ServerList) UseGlobalValues() {
 		if endpoint.Password == "" {
 			endpoint.Password = s.Global.Password
 		}
+		if endpoint.Passwords == nil {
+			endpoint.Passwords = s.Global.Passwords
+		}
 		if endpoint.Key == "" {
 			endpoint.Key = s.Global.Key
+		}
+		if endpoint.QAs == nil {
+			endpoint.QAs = s.Global.QAs
 		}
 	}
 }
 
 //
 func (s *ServerList) println() {
-	log.ConsoleWithGreen(fmt.Sprintf("%-4s\t%-20s\t%-40s\t%-5s", "序号", "名称", "IP", "端口"))
+	format := "%-4v\t%-20s\t%-40s\t%-5s"
+	log.ConsoleWithGreen(fmt.Sprintf(format, "序号", "名称", "地址", "用户名"))
 	for index, endpoint := range s.result {
-		item := fmt.Sprintf("%-4d\t%-20s\t%-40s\t%-5d", index, endpoint.Name, endpoint.IP, endpoint.Port)
-		log.ConsoleWithGreen(item)
+		log.ConsoleWithGreen(
+			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), endpoint.User),
+		)
 	}
 }
 
@@ -74,7 +82,7 @@ func (s *ServerList) Search(search string) []*ssh.Endpoint {
 }
 
 // Add add
-func (s *ServerList) Add(name, host, ip string, port int, user, password, key string) error {
+func (s *ServerList) Add(name, host, ip, port, user, password, key string) error {
 	endpoint := ssh.NewEndpointWithValue(name, host, ip, port, user, password, key)
 	s.Servers = append(s.Servers, endpoint)
 	return nil
@@ -98,7 +106,7 @@ func (s *ServerList) ConsoleAdd() {
 
 	log.ConsoleWithGreen("输入端口: ")
 	fmt.Scanln(&input)
-	endpoint.Port = 22
+	endpoint.Port = input
 
 	log.ConsoleWithGreen("输入用户名: ")
 	fmt.Scanln(&input)

@@ -14,7 +14,7 @@ type Params struct {
 	Version  bool
 	User     string
 	Password string
-	Port     int
+	Port     string
 	Key      string
 	Hosts    []string
 	Timeout  int
@@ -29,7 +29,7 @@ func NewParams() *Params {
 	version := flag.Bool("v", false, "(version)版本")
 	user := flag.String("u", sys.Username(), "(username)用户名")
 	password := flag.String("p", "", "(password)密码")
-	port := flag.Int("P", 22, "(Port)端口")
+	port := flag.String("P", "22", "(Port)端口")
 	key := flag.String("k", "", "(key)证书文件,绝对路径")
 	iplist := flag.String("i", "", "IP地址列表,使用\",\"分割")
 	ipfile := flag.String("file", "", "IP列表文件,使用\\n分割")

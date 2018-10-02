@@ -10,7 +10,7 @@ PKG = github.com/luopengift/version
 FLAG = "-X '${PKG}.VERSION=${VERSION}' -X '${PKG}.APP=${APP}' -X '${PKG}.TIME=${TIME}' -X '${PKG}.GIT=${GIT}'"
 
 build:
-	go build -ldflags $(FLAG) -o $(APP) $(MAIN)
+	go build -ldflags $(FLAG) -o ${GOPATH}/bin/$(APP) $(MAIN)
 install:
 	mv $(APP) $(PREFIX)/bin
 fmt:

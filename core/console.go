@@ -1,27 +1,15 @@
 package core
 
 import (
-	"bufio"
 	"context"
-	"fmt"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/chzyer/readline"
 	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/version"
 )
-
-func getInput(ps string) (string, error) {
-	fmt.Fprintf(os.Stderr, ps)
-	inputReader := bufio.NewReader(os.Stdin)
-	input, err := inputReader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return input[:len(input)-1], nil
-}
 
 // Welcome first time into console
 func welcome() {
@@ -33,31 +21,32 @@ func welcome() {
 func StartConsole(serverList *ServerList) error {
 	log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 	welcome()
-	PS := "> "
+	rl, err := readline.New("> ")
+	if err != nil {
+		return err
+	}
+	defer rl.Close()
 	for {
-		//serverList.println()
-		input, err := getInput(PS)
+		input, err := rl.Readline()
 		if err != nil {
-			log.Error("input error: %v, %v", input, err)
-			continue
+			return err
 		}
-		switch input {
-		case "":
-			continue
-		case "list":
+		input = strings.TrimSpace(input)
+		switch {
+		case input == "list":
 			serverList.println()
-		case "v", "version", "-v", "-version", "--version":
+		case input == "v", input == "version", input == "-v", input == "-version", input == "--version":
 			log.ConsoleWithGreen("version:%v, build time:%v, build tag:%v", version.VERSION, version.TIME, version.GIT)
-		case "add":
+		case input == "add":
 			serverList.ConsoleAdd()
-		case "show":
+		case input == "show":
 			continue
-		case "dump":
+		case input == "dump":
 			continue
-		case "q", "quit", "exit":
+		case input == "q", input == "quit", input == "exit":
 			log.ConsoleWithGreen("exit...")
 			return nil
-		case "h", "help":
+		case input == "h", input == "help":
 			log.ConsoleWithGreen("help....")
 			log.ConsoleWithGreen("输入序号/名称/IP地址均可")
 			log.ConsoleWithGreen("以'/'开头表示查询")
@@ -66,26 +55,25 @@ func StartConsole(serverList *ServerList) error {
 			//log.ConsoleWithGreen("add: 新增一台主机")
 			//log.ConsoleWithGreen("rm: 删除一台主机")
 			log.ConsoleWithGreen("\n")
-		case "search":
-			log.ConsoleWithGreen("searching...")
-			log.Warn("查询[%s]中,请稍后...", input)
-			var result []*ssh.Endpoint
-			switch input[0] {
-			case '/':
-				result = serverList.Search(strings.TrimSpace(string(input[1:])))
-			default:
-				result = serverList.Match(strings.TrimSpace(input))
+		case input == "qa":
+			// question and answer
+		case strings.HasPrefix(input, "search"), strings.HasPrefix(input, "s "):
+			inputList := strings.Split(input, " ")
+			if len(inputList) != 2 {
+				log.ConsoleWithGreen("not 2...")
+				serverList.println()
+				continue
 			}
 
-			switch len(result) {
-			case 1:
+			log.ConsoleWithGreen("查询[%s]中,请稍后...", inputList[1])
+			var result []*ssh.Endpoint
+			result = serverList.Match(inputList[1])
+			if len(result) == 1 {
 				log.ConsoleWithGreen("正在登录 %v", result[0].IP)
 				err = result[0].StartTerminal()
-				serverList.Reset()
-				return err
-			default:
-				serverList.Reset()
 			}
+			serverList.Reset()
+
 		default:
 			ctx := context.TODO()
 			Bash(ctx, input, nil)

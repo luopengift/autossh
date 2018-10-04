@@ -72,8 +72,8 @@ func (s *ServerList) Match(match string) []*ssh.Endpoint {
 // Search search
 func (s *ServerList) Search(search string) []*ssh.Endpoint {
 	result := []*ssh.Endpoint{}
-	for _, endpoint := range s.result {
-		if strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
+	for index, endpoint := range s.result {
+		if search == strconv.Itoa(index) || strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
 			result = append(result, endpoint)
 		}
 	}

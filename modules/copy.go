@@ -9,8 +9,8 @@ import (
 
 //Copy copies files to remote locations
 type Copy struct {
-	Src  string `json:"src",yaml:"src"`
-	Dest string `json:"dest",yaml:"dest"`
+	Src  string `json:"src" yaml:"src"`
+	Dest string `json:"dest" yaml:"dest"`
 }
 
 // Name name

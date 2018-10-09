@@ -9,8 +9,8 @@ import (
 
 // Fetch fetch - Fetches a file from remote nodes
 type Fetch struct {
-	Src  string `json:"src",yaml:"src"`
-	Dest string `json:"dest",yaml:"dest"`
+	Src  string `json:"src" yaml:"src"`
+	Dest string `json:"dest" yaml:"dest"`
 }
 
 // Init init

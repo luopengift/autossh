@@ -1,4 +1,4 @@
-package core
+package config
 
 import (
 	"fmt"
@@ -9,90 +9,93 @@ import (
 	"github.com/luopengift/ssh"
 )
 
-// ServerList serverList
-type ServerList struct {
-	Global  *ssh.Endpoint   `yaml:"global"`
-	Servers []*ssh.Endpoint `yaml:"servers"`
+// Config config
+type Config struct {
+	Remote  bool            `json:"remote" yaml:"remote"` // 是否开启远程接口获取IP信息
+	Shell   bool            `json:"shell" yaml:"shell"`   // 是否支持本地SHELL模式
+	Backup  string          `json:"backup" yaml:"backup"` // 是否支持审计模式
+	Global  *ssh.Endpoint   `json:"global" yaml:"global"` // global config
+	Servers []*ssh.Endpoint `json:"servers" yaml:"servers"`
 	result  []*ssh.Endpoint
 }
 
 // UseGlobalValues UseGlobalValues
-func (s *ServerList) UseGlobalValues() {
-	for _, endpoint := range s.Servers {
+func (c *Config) UseGlobalValues() {
+	for _, endpoint := range c.Servers {
 		if endpoint.Port == "" {
-			endpoint.Port = s.Global.Port
+			endpoint.Port = c.Global.Port
 		}
 		if endpoint.User == "" {
-			endpoint.User = s.Global.User
+			endpoint.User = c.Global.User
 		}
 		if endpoint.Password == "" {
-			endpoint.Password = s.Global.Password
+			endpoint.Password = c.Global.Password
 		}
 		if endpoint.Passwords == nil {
-			endpoint.Passwords = s.Global.Passwords
+			endpoint.Passwords = c.Global.Passwords
 		}
 		if endpoint.Key == "" {
-			endpoint.Key = s.Global.Key
+			endpoint.Key = c.Global.Key
 		}
 		if endpoint.QAs == nil {
-			endpoint.QAs = s.Global.QAs
+			endpoint.QAs = c.Global.QAs
 		}
 	}
 }
 
-//
-func (s *ServerList) println() {
+// Println println
+func (c *Config) Println() {
 	format := "%-4v\t%-20s\t%-40s\t%-5s"
 	log.ConsoleWithGreen(fmt.Sprintf(format, "序号", "名称", "地址", "用户名"))
-	for index, endpoint := range s.result {
+	for index, endpoint := range c.result {
 		log.ConsoleWithGreen(
 			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), endpoint.User),
 		)
 	}
 }
 
-// Reset Reset
-func (s *ServerList) Reset() []*ssh.Endpoint {
-	s.result = s.Servers
-	return s.result
-}
-
 // Match match
-func (s *ServerList) Match(match string) []*ssh.Endpoint {
+func (c *Config) Match(match string) []*ssh.Endpoint {
 	result := []*ssh.Endpoint{}
-	for index, endpoint := range s.result {
+	for index, endpoint := range c.result {
 		if match == strconv.Itoa(index) || match == endpoint.Name || match == endpoint.Host || match == endpoint.IP {
 			result = append(result, endpoint)
 		}
 	}
-	s.result = result
-	return s.result
+	c.result = result
+	return c.result
 }
 
 // Search search
-func (s *ServerList) Search(search string) []*ssh.Endpoint {
+func (c *Config) Search(search string) []*ssh.Endpoint {
 	result := []*ssh.Endpoint{}
-	for index, endpoint := range s.result {
+	for index, endpoint := range c.result {
 		if search == strconv.Itoa(index) || strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
 			result = append(result, endpoint)
 		}
 	}
-	s.result = result
-	return s.result
+	c.result = result
+	return c.result
+}
+
+// Reset Reset
+func (c *Config) Reset() []*ssh.Endpoint {
+	c.result = c.Servers
+	return c.result
 }
 
 // Add add
-func (s *ServerList) Add(name, host, ip, port, user, password, key string) error {
+func (c *Config) Add(name, host, ip, port, user, password, key string) error {
 	endpoint := ssh.NewEndpointWithValue(name, host, ip, port, user, password, key)
-	s.Servers = append(s.Servers, endpoint)
+	c.Servers = append(c.Servers, endpoint)
 	return nil
 }
 
 // ConsoleAdd ConsoleAdd
-func (s *ServerList) ConsoleAdd() {
+func (c *Config) ConsoleAdd() {
 	input := ""
 	endpoint := ssh.NewEndpoint()
-	fmt.Printf("输入主机名称[" + s.Global.Name + "]: ")
+	fmt.Printf("输入主机名称[" + c.Global.Name + "]: ")
 	fmt.Scanln(&input)
 	endpoint.Name = input
 
@@ -120,7 +123,7 @@ func (s *ServerList) ConsoleAdd() {
 	fmt.Scanln(&input)
 	endpoint.Key = input
 
-	s.Servers = append(s.Servers, endpoint)
-	s.result = append(s.result, endpoint)
+	c.Servers = append(c.Servers, endpoint)
+	c.result = append(c.result, endpoint)
 
 }

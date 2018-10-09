@@ -8,13 +8,12 @@ import (
 func Test_paesr(t *testing.T) {
 	str := "src=/ dest=/tmp"
 	fmt.Println(str)
-	parse(str)
+	parseArgs(str)
 	str = "src = / dest = /tmp"
 	fmt.Println(str)
-	parse(str)
+	parseArgs(str)
 
 	str = "src = / tt dest = /tmp"
 	fmt.Println(str)
-	parse(str)
-
+	parseArgs(str)
 }

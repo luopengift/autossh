@@ -5,17 +5,22 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/luopengift/ssh"
 )
 
 // Bash bash, local shell
 func Bash(ctx context.Context, command string, writers []io.Writer) error {
-	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", command)
-	cmd.Stdin = os.Stdin
+	cmdList := strings.Split(command, " ")
+	var cmd *exec.Cmd
+	if len(cmdList) == 1 {
+		cmd = exec.CommandContext(ctx, cmdList[0])
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	} else {
+		cmd = exec.CommandContext(ctx, cmdList[0], cmdList[1:]...)
+	}
+	cmd.Stdin = os.Stdin
 
 	if writers == nil {
 		cmd.Stdout = os.Stdout

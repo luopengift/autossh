@@ -1,19 +1,21 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
+	"github.com/luopengift/autossh/config"
 	"github.com/luopengift/autossh/core"
+	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/types"
 	"github.com/luopengift/version"
 )
 
 // Exec exec
-func Exec() error {
+func Exec(ctx context.Context, conf *config.Config) error {
 	var err error
-	serverList := &core.ServerList{}
 	params := NewParams()
 	if params.Version {
 		fmt.Println(version.VERSION)
@@ -21,13 +23,18 @@ func Exec() error {
 	}
 	switch {
 	case len(os.Args) < 3: //登录交互模式
-		err = types.ParseConfigFile("~/.autossh/autossh.yml", serverList)
-		if err != nil {
-			return err
+		if conf.Remote { // 远程获取模式
+
+		} else { // 本地配置模式
+			err = types.ParseConfigFile("~/.autossh/autossh.yml", conf)
+			if err != nil {
+				log.Error("%v", err)
+				return err
+			}
+			conf.UseGlobalValues()
+			conf.Reset()
 		}
-		serverList.UseGlobalValues()
-		serverList.Reset()
-		return core.StartConsole(serverList)
+		return core.StartConsole(ctx, conf)
 	default: //batach模式
 		hosts, err := params.Hosts()
 		if err != nil {
@@ -35,9 +42,9 @@ func Exec() error {
 		}
 		for _, ip := range hosts {
 			endpoint := ssh.NewEndpointWithValue("", "", ip, params.Port, params.User, params.Password, params.Key)
-			serverList.Servers = append(serverList.Servers, endpoint)
+			conf.Servers = append(conf.Servers, endpoint)
 		}
 		batch := core.NewBatch(params.Fork, params.Timeout)
-		return batch.Execute(serverList.Servers, params.Module, params.Args)
+		return batch.Execute(conf.Servers, params.Module, params.Args)
 	}
 }

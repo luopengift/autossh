@@ -17,6 +17,5 @@ func parseArgs(str string) (map[string]string, error) {
 		}
 		res[strings.TrimSpace(values[0])] = strings.TrimSpace(values[1])
 	}
-
 	return res, nil
 }

@@ -91,10 +91,11 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 					defer f.Close()
 					result[0].SetWriters(f)
 				}
-				err = result[0].StartTerminal()
+				if err = result[0].StartTerminal(); err != nil {
+					log.ConsoleWithRed("%v", err)
+				}
 			}
 			conf.Reset()
-
 		default:
 			if conf.Shell {
 				Bash(ctx, input, nil)

@@ -29,11 +29,12 @@ type Params struct {
 // Hosts get hosts
 func (params *Params) Hosts() ([]string, error) {
 	var hosts []string
-	switch {
-	case params.ipList != "":
+
+	if params.ipList != "" {
 		hosts = strings.Split(params.ipList, ",")
-		fallthrough
-	case params.ipFiles != "":
+	}
+
+	if params.ipFiles != "" {
 		for _, ipFile := range strings.Split(params.ipFiles, ";") {
 			st, err := file.NewFile(ipFile, os.O_RDONLY).ReadAll()
 			if err != nil {

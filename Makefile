@@ -1,7 +1,7 @@
 APP = autossh
 MAIN = cmd/autossh/main.go
 PREFIX = /usr/local
-VERSION	= 0.1.3_092918
+VERSION	= $(shell cat version)
 
 TIME = $(shell date "+%F %T")
 GIT = $(shell git rev-parse HEAD)

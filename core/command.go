@@ -16,10 +16,10 @@ func Bash(ctx context.Context, command string, writers []io.Writer) error {
 	var cmd *exec.Cmd
 	if len(cmdList) == 1 {
 		cmd = exec.CommandContext(ctx, cmdList[0])
-
 	} else {
 		cmd = exec.CommandContext(ctx, cmdList[0], cmdList[1:]...)
 	}
+
 	cmd.Stdin = os.Stdin
 
 	if writers == nil {

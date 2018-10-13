@@ -19,12 +19,14 @@ type Config struct {
 	Servers []*ssh.Endpoint `json:"servers" yaml:"servers"`
 	result  []*ssh.Endpoint
 }
+
+// Init config init
 func Init() *Config {
 	return &Config{}
 }
 func (c *Config) LoadConfig(f string) error {
 	if err := types.ParseConfigFile(f, c); err != nil {
-		return  err
+		return err
 	}
 	return nil
 }
@@ -32,10 +34,11 @@ func (c *Config) LoadConfig(f string) error {
 // LoadRootConfig load rot config
 func (c *Config) LoadRootConfig() error {
 	if err := c.LoadConfig("/etc/autossh/autossh.yaml"); err != nil {
-		return  err
+		return err
 	}
-	return  nil
+	return nil
 }
+
 // LoadUserConfig load user config
 func (c *Config) LoadUserConfig() error {
 	if err := c.LoadConfig("~/.autossh/autossh.yml"); err != nil {
@@ -45,7 +48,6 @@ func (c *Config) LoadUserConfig() error {
 	c.Reset()
 	return nil
 }
-
 
 // UseGlobalValues UseGlobalValues
 func (c *Config) UseGlobalValues() {

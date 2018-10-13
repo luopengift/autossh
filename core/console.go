@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -18,25 +19,23 @@ import (
 func welcome() {
 	log.ConsoleWithBlue("\t\t### 欢迎使用Autossh Jump System ###")
 	log.ConsoleWithGreen("")
-	log.ConsoleWithGreen("\t1) 输入ID直接登陆.")
-	log.ConsoleWithGreen("\t2) 输入P/p查看机器列表.")
-	log.ConsoleWithGreen("\t2) 输入s + IP, 主机名搜索.")
-	log.ConsoleWithGreen("\t3) 输入H/h帮助.")
-	log.ConsoleWithGreen("\t4) 输入Q/q退出.")
+	for idx, v := range []string{
+		"输入P/p 查看机器列表.",
+		"输入s + IP,主机名 搜索.",
+		"输入V/v 查看版本号.",
+		"输入H/h 帮助.",
+		"输入Q/q 退出.",
+	} {
+		log.ConsoleWithGreen("\t%d) %s", idx, v)
+	}
 	log.ConsoleWithGreen("")
-}
-
-type Prompt struct {}
-func (p *Prompt) String() string {
-	return "> "
-	//return time.Now().Format("2006/01/02 15:04:05") + "> "
 }
 
 // StartConsole StartConsole
 func StartConsole(ctx context.Context, conf *config.Config) error {
 	log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 	welcome()
-	rl, err := readline.New(&Prompt{})
+	rl, err := readline.New(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
 	if err != nil {
 		return err
 	}
@@ -50,34 +49,25 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		switch {
 		case input == "P", input == "p":
 			conf.Println()
-		case input == "v", input == "version", input == "-v", input == "-version", input == "--version":
-			log.ConsoleWithGreen("version:%v, build time:%v, build tag:%v", version.VERSION, version.TIME, version.GIT)
-		case input == "add":
+		case input == "V", input == "v", input == "version", input == "-v", input == "-version", input == "--version":
+			log.ConsoleWithGreen("version: %v, buildTime: %v, buildTag: %v", version.VERSION, version.TIME, version.GIT)
+		case input == "add": // 新增一台主机
 			conf.ConsoleAdd()
 		case input == "show":
 			continue
-		case input == "dump":
+		case input == "dump": // 存储配置文件
 			continue
 		case input == "q", input == "Q", input == "quit", input == "exit":
 			log.ConsoleWithGreen("exit...")
 			return nil
 		case input == "h", input == "H", input == "help":
 			welcome()
-			// log.ConsoleWithGreen("help....")
-			// log.ConsoleWithGreen("输入序号/名称/IP地址均可")
-			// log.ConsoleWithGreen("以'/'开头表示查询")
-			// log.ConsoleWithGreen("q|quit|exit: 退出")
-			// //log.ConsoleWithGreen("dump: 存储配置文件")
-			// //log.ConsoleWithGreen("add: 新增一台主机")
-			// //log.ConsoleWithGreen("rm: 删除一台主机")
-			// log.ConsoleWithGreen("\n")
 		case input == "qa":
 			// question and answer
 		case strings.HasPrefix(input, "s "):
 			inputList := strings.Split(input, " ")
 			if len(inputList) != 2 {
-				log.ConsoleWithGreen("not 2...")
-				//conf.Println()
+				log.ConsoleWithRed("输入有误! 请输入H/h 查看帮助.")
 				continue
 			}
 			log.ConsoleWithGreen("查询[%s]中,请稍后...", inputList[1])

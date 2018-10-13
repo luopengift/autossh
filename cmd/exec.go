@@ -7,9 +7,7 @@ import (
 
 	"github.com/luopengift/autossh/config"
 	"github.com/luopengift/autossh/core"
-	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
-	"github.com/luopengift/types"
 	"github.com/luopengift/version"
 )
 
@@ -26,13 +24,9 @@ func Exec(ctx context.Context, conf *config.Config) error {
 		if conf.Remote { // 远程获取模式
 
 		} else { // 本地配置模式
-			err = types.ParseConfigFile("~/.autossh/autossh.yml", conf)
-			if err != nil {
-				log.Error("%v", err)
+			if err = conf.LoadUserConfig(); err != nil {
 				return err
 			}
-			conf.UseGlobalValues()
-			conf.Reset()
 		}
 		return core.StartConsole(ctx, conf)
 	default: //batach模式

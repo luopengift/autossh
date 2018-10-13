@@ -26,13 +26,17 @@ func welcome() {
 	log.ConsoleWithGreen("")
 }
 
+type Prompt struct {}
+func (p *Prompt) String() string {
+	return "> "
+	//return time.Now().Format("2006/01/02 15:04:05") + "> "
+}
+
 // StartConsole StartConsole
 func StartConsole(ctx context.Context, conf *config.Config) error {
 	log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 	welcome()
-	rl, err := readline.New(func() string {
-		return time.Now().Format("2006/01/02 15:04:05") + "> "
-	})
+	rl, err := readline.New(&Prompt{})
 	if err != nil {
 		return err
 	}

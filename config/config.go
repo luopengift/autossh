@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/types"
@@ -33,7 +35,7 @@ func (c *Config) LoadConfig(f string) error {
 
 // LoadRootConfig load rot config
 func (c *Config) LoadRootConfig() error {
-	if err := c.LoadConfig("/etc/autossh/autossh.yaml"); err != nil {
+	if err := c.LoadConfig("/etc/autossh/autossh.yml"); err != nil {
 		return err
 	}
 	return nil
@@ -52,24 +54,7 @@ func (c *Config) LoadUserConfig() error {
 // UseGlobalValues UseGlobalValues
 func (c *Config) UseGlobalValues() {
 	for _, endpoint := range c.Servers {
-		if endpoint.Port == "" {
-			endpoint.Port = c.Global.Port
-		}
-		if endpoint.User == "" {
-			endpoint.User = c.Global.User
-		}
-		if endpoint.Password == "" {
-			endpoint.Password = c.Global.Password
-		}
-		if endpoint.Passwords == nil {
-			endpoint.Passwords = c.Global.Passwords
-		}
-		if endpoint.Key == "" {
-			endpoint.Key = c.Global.Key
-		}
-		if endpoint.QAs == nil {
-			endpoint.QAs = c.Global.QAs
-		}
+		endpoint.Mask(c.Global)
 	}
 }
 
@@ -122,38 +107,71 @@ func (c *Config) Add(name, host, ip, port, user, password, key string) error {
 }
 
 // ConsoleAdd ConsoleAdd
-func (c *Config) ConsoleAdd() {
+func (c *Config) ConsoleAdd() error {
 	input := ""
 	endpoint := ssh.NewEndpoint()
-	fmt.Printf("输入主机名称[" + c.Global.Name + "]: ")
-	fmt.Scanln(&input)
+	rl, err := readline.New(readline.StaticPrompt("输入主机名称: "))
+	if err != nil {
+		return err
+	}
+	defer rl.Close()
+	input, err = rl.Readline()
+	if err != nil {
+		return err
+	}
 	endpoint.Name = input
 
-	log.ConsoleWithGreen("输入主机地址: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入主机地址: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.Host = input
+	// 默认为空,则使用主机名称
+	if input == "" {
+		endpoint.Host = endpoint.Name
+	}
 
-	log.ConsoleWithGreen("输入IP地址: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入IP地址: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.IP = input
 
-	log.ConsoleWithGreen("输入端口: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入端口: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.Port = input
 
-	log.ConsoleWithGreen("输入用户名: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入用户名: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.User = input
 
-	log.ConsoleWithGreen("输入密码: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入密码: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.Password = input
 
-	log.ConsoleWithGreen("输入证书: ")
-	fmt.Scanln(&input)
+	rl.SetPrompt(readline.StaticPrompt("输入证书: "))
+	if input, err = rl.Readline(); err != nil {
+		return err
+	}
 	endpoint.Key = input
+
+	endpoint.Mask(c.Global)
 
 	c.Servers = append(c.Servers, endpoint)
 	c.result = append(c.result, endpoint)
+	return nil
+}
 
+func (c *Config) Dump(f string) error {
+	b, err := types.ToYAML(c)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(f, b, 0644)
 }

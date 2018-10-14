@@ -51,12 +51,29 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			conf.Println()
 		case input == "V", input == "v", input == "version", input == "-v", input == "-version", input == "--version":
 			log.ConsoleWithGreen("version: %v, buildTime: %v, buildTag: %v", version.VERSION, version.TIME, version.GIT)
+		case input == "config":
+			log.Display("config", conf)
 		case input == "add": // 新增一台主机
-			conf.ConsoleAdd()
+			if false {
+				if err = conf.ConsoleAdd(); err != nil {
+					log.ConsoleWithRed("%v", err)
+				}
+			}
 		case input == "show":
 			continue
-		case input == "dump": // 存储配置文件
-			continue
+		case strings.HasPrefix(input, "dump "): // 存储配置文件
+			if false {
+				inputList := strings.Split(input, " ")
+				if len(inputList) != 2 {
+					log.ConsoleWithRed("输入有误! 请输入H/h 查看帮助.")
+					continue
+				}
+				if err = conf.Dump(inputList[1]); err != nil {
+					log.ConsoleWithRed("Dump 出错: %v", err)
+				} else {
+					log.ConsoleWithGreen("Dump 成功: %v", inputList[1])
+				}
+			}
 		case input == "q", input == "Q", input == "quit", input == "exit":
 			log.ConsoleWithGreen("exit...")
 			return nil

@@ -17,7 +17,7 @@ import (
 
 // Welcome first time into console
 func welcome() {
-	log.ConsoleWithBlue("\t\t### 欢迎使用Autossh Jump System ###")
+	log.ConsoleWithBlue("\t\t### 欢迎使用Autossh Jump System[%s] ###", time.Now().Format("2006/01/02 15:04:05"))
 	log.ConsoleWithGreen("")
 	for idx, v := range []string{
 		"输入P/p 查看机器列表.",
@@ -33,7 +33,6 @@ func welcome() {
 
 // StartConsole StartConsole
 func StartConsole(ctx context.Context, conf *config.Config) error {
-	log.Warn("Autossh... %s", time.Now().Format("2006/01/02 15:04:05"))
 	welcome()
 	rl, err := readline.New(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
 	if err != nil {
@@ -41,6 +40,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 	}
 	defer rl.Close()
 	for {
+		rl.SetPrompt(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
 		input, err := rl.Readline()
 		if err != nil {
 			return err
@@ -91,6 +91,25 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			var result []*ssh.Endpoint
 			result = conf.Match(inputList[1])
 			if len(result) == 1 {
+				users, flag := result[0].GetUsers()
+				switch len(users) {
+				case 0:
+					return nil
+				case 1:
+					result[0].User = users[0]
+				default:
+					log.ConsoleWithGreen("[ID]\t用户名")
+					for idx, user := range users {
+						log.ConsoleWithGreen("[%v]\t%s", idx, user)
+					}
+					log.ConsoleWithBlue("授权登陆用户超过1个, 请输入ID选择.")
+					rl.SetPrompt(readline.StaticPrompt("输入用户/用户序号> "))
+					inputUser, err := rl.Readline()
+					if err != nil {
+						return err
+					}
+					result[0].User = inputUser
+				}
 				log.ConsoleWithGreen("正在登录 %v", result[0].IP)
 				if conf.Backup != "" {
 					filepath := path.Join(conf.Backup, os.Getenv("USER"), result[0].IP+time.Now().Format("20060102150405.log"))
@@ -104,6 +123,9 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				}
 				if err = result[0].StartTerminal(); err != nil {
 					log.ConsoleWithRed("%v", err)
+				}
+				if !flag {
+					result[0].User = ""
 				}
 			}
 			conf.Reset()

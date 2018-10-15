@@ -63,8 +63,9 @@ func (c *Config) Println() {
 	format := "%-4v\t%-20s\t%-40s\t%-5s"
 	log.ConsoleWithGreen(fmt.Sprintf(format, "序号", "名称", "地址", "用户名"))
 	for index, endpoint := range c.result {
+		users, _ := endpoint.GetUsers()
 		log.ConsoleWithGreen(
-			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), endpoint.User),
+			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), "[ "+strings.Join(users, ", ")+" ]"),
 		)
 	}
 }

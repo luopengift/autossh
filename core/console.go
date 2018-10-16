@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,7 +18,7 @@ import (
 
 // Welcome first time into console
 func welcome() {
-	log.ConsoleWithBlue("\t\t### 欢迎使用Autossh Jump System[%s] ###", time.Now().Format("2006/01/02 15:04:05"))
+	log.ConsoleWithBlue("### 欢迎使用Autossh Jump System[%s] ###", time.Now().Format("2006/01/02 15:04:05"))
 	log.ConsoleWithGreen("")
 	for idx, v := range []string{
 		"输入P/p 查看机器列表.",
@@ -108,9 +109,15 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 					if err != nil {
 						return err
 					}
-					result[0].User = inputUser
+
+					id, err := strconv.Atoi(inputUser) // 尝试将inputUser转换成数字, 如果成功的话, 则判断输入为ID
+					if err != nil {
+						result[0].User = inputUser
+					} else {
+						result[0].User = users[id]
+					}
 				}
-				log.ConsoleWithGreen("正在登录 %v", result[0].IP)
+				log.ConsoleWithGreen("正在使用用户[%s]登录 %s:%s", result[0].User, result[0].IP, result[0].Port)
 				if conf.Backup != "" {
 					filepath := path.Join(conf.Backup, os.Getenv("USER"), result[0].IP+time.Now().Format("20060102150405.log"))
 					f, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)

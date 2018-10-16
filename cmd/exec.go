@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/luopengift/autossh/command"
 	"github.com/luopengift/autossh/config"
-	"github.com/luopengift/autossh/core"
+	"github.com/luopengift/autossh/console"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/version"
 )
@@ -28,7 +29,7 @@ func Exec(ctx context.Context, conf *config.Config) error {
 				return err
 			}
 		}
-		return core.StartConsole(ctx, conf)
+		return console.StartConsole(ctx, conf)
 	default: //batach模式
 		hosts, err := params.Hosts()
 		if err != nil {
@@ -36,9 +37,9 @@ func Exec(ctx context.Context, conf *config.Config) error {
 		}
 		for _, ip := range hosts {
 			endpoint := ssh.NewEndpointWithValue("", "", ip, params.Port, params.User, params.Password, params.Key)
-			conf.Servers = append(conf.Servers, endpoint)
+			conf.Endpoints = append(conf.Endpoints, endpoint)
 		}
-		batch := core.NewBatch(params.Fork, params.Timeout)
-		return batch.Execute(conf.Servers, params.Module, params.Args)
+		batch := command.NewBatch(params.Fork, params.Timeout)
+		return batch.Execute(conf.Endpoints, params.Module, params.Args)
 	}
 }

@@ -1,25 +1,23 @@
 package config
 
 import (
-	"fmt"
 	"io/ioutil"
-	"strconv"
-	"strings"
 
 	"github.com/chzyer/readline"
-	"github.com/luopengift/log"
+	"github.com/luopengift/autossh/pkg/endpoint"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/types"
 )
 
 // Config config
 type Config struct {
-	Remote  bool            `json:"remote" yaml:"remote"` // 是否开启远程接口获取IP信息
-	Shell   bool            `json:"shell" yaml:"shell"`   // 是否支持本地SHELL模式
-	Backup  string          `json:"backup" yaml:"backup"` // 是否支持审计模式
-	Global  *ssh.Endpoint   `json:"global" yaml:"global"` // global config
-	Servers []*ssh.Endpoint `json:"servers" yaml:"servers"`
-	result  []*ssh.Endpoint
+	Debug              bool          `json:"debug" yaml:"debug"`   // 是否进入调试模式
+	Remote             bool          `json:"remote" yaml:"remote"` // 是否开启远程接口获取IP信息
+	Shell              bool          `json:"shell" yaml:"shell"`   // 是否支持本地SHELL模式
+	Backup             string        `json:"backup" yaml:"backup"` // 是否支持审计模式
+	Global             *ssh.Endpoint `json:"global" yaml:"global"` // global config
+	endpoint.Endpoints `json:"endpoints" yaml:"endpoints"`
+	//result             endpoint.Endpoints
 }
 
 // Init config init
@@ -47,63 +45,27 @@ func (c *Config) LoadUserConfig() error {
 		return err
 	}
 	c.UseGlobalValues()
-	c.Reset()
+	//c.Reset()
 	return nil
 }
 
 // UseGlobalValues UseGlobalValues
 func (c *Config) UseGlobalValues() {
-	for _, endpoint := range c.Servers {
+	for _, endpoint := range c.Endpoints {
 		endpoint.Mask(c.Global)
 	}
 }
 
-// Println println
-func (c *Config) Println() {
-	format := "%-4v\t%-20s\t%-40s\t%-5s"
-	log.ConsoleWithGreen(fmt.Sprintf(format, "序号", "名称", "地址", "用户名"))
-	for index, endpoint := range c.result {
-		users, _ := endpoint.GetUsers()
-		log.ConsoleWithGreen(
-			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), "[ "+strings.Join(users, ", ")+" ]"),
-		)
-	}
-}
-
-// Match match
-func (c *Config) Match(match string) []*ssh.Endpoint {
-	result := []*ssh.Endpoint{}
-	for index, endpoint := range c.result {
-		if match == strconv.Itoa(index) || match == endpoint.Name || match == endpoint.Host || match == endpoint.IP {
-			result = append(result, endpoint)
-		}
-	}
-	c.result = result
-	return c.result
-}
-
-// Search search
-func (c *Config) Search(search string) []*ssh.Endpoint {
-	result := []*ssh.Endpoint{}
-	for index, endpoint := range c.result {
-		if search == strconv.Itoa(index) || strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
-			result = append(result, endpoint)
-		}
-	}
-	c.result = result
-	return c.result
-}
-
 // Reset Reset
-func (c *Config) Reset() []*ssh.Endpoint {
-	c.result = c.Servers
-	return c.result
-}
+// func (c *Config) Reset() []*ssh.Endpoint {
+// 	c.result = c.Endpoints
+// 	return c.result
+// }
 
 // Add add
 func (c *Config) Add(name, host, ip, port, user, password, key string) error {
 	endpoint := ssh.NewEndpointWithValue(name, host, ip, port, user, password, key)
-	c.Servers = append(c.Servers, endpoint)
+	c.Endpoints = append(c.Endpoints, endpoint)
 	return nil
 }
 
@@ -164,8 +126,8 @@ func (c *Config) ConsoleAdd() error {
 
 	endpoint.Mask(c.Global)
 
-	c.Servers = append(c.Servers, endpoint)
-	c.result = append(c.result, endpoint)
+	c.Endpoints = append(c.Endpoints, endpoint)
+	//c.result = append(c.result, endpoint)
 	return nil
 }
 

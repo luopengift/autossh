@@ -1,4 +1,4 @@
-package core
+package console
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/luopengift/autossh/config"
+	"github.com/luopengift/autossh/pkg/runtime"
 	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/version"
@@ -34,6 +35,11 @@ func welcome() {
 
 // StartConsole StartConsole
 func StartConsole(ctx context.Context, conf *config.Config) error {
+	r, err := runtime.NewRuntime()
+	if err != nil {
+		return err
+	}
+	r.SetEndpoints(conf.Endpoints)
 	welcome()
 	rl, err := readline.New(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
 	if err != nil {
@@ -60,8 +66,23 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 					log.ConsoleWithRed("%v", err)
 				}
 			}
-		case input == "show":
-			continue
+		case strings.HasPrefix(input, "print "):
+			if !conf.Debug {
+				continue
+			}
+			inputList := strings.Split(input, " ")
+			if len(inputList) != 2 {
+				log.ConsoleWithRed("输入有误! 请输入H/h 查看帮助.")
+				continue
+			}
+			switch inputList[1] {
+			case "config":
+				log.Display("config", conf)
+			case "runtime":
+				log.Display("runtime", r)
+			default:
+				log.Info("Hello~@~")
+			}
 		case strings.HasPrefix(input, "dump "): // 存储配置文件
 			if false {
 				inputList := strings.Split(input, " ")
@@ -135,7 +156,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 					result[0].User = ""
 				}
 			}
-			conf.Reset()
+			r.SetEndpoints(conf.Endpoints)
 		default:
 			if conf.Shell {
 				Bash(ctx, input, nil)

@@ -1,17 +1,24 @@
-package core
+package runtime
 
 import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/luopengift/autossh/pkg/endpoint"
 )
 
 // Runtime runtime, parse shell cmd `who` or `who -m`
 type Runtime struct {
-	User string
-	Tty  string
-	Date string
-	IP   string
+	User      string
+	Tty       string
+	Date      string
+	IP        string
+	Endpoints endpoint.Endpoints
+}
+
+func (r *Runtime) SetEndpoints(eps endpoint.Endpoints) {
+	r.Endpoints = eps
 }
 
 func (r *Runtime) parse(out string) {

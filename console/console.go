@@ -46,7 +46,6 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 	}
 	defer rl.Close()
 	for {
-
 		input, err := rl.Readline()
 		if err != nil {
 			return err
@@ -143,6 +142,11 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 					if err != nil {
 						result[0].User = inputUser
 					} else {
+						if id > len(users) {
+							log.ConsoleWithRed("输入有误!")
+							rl.SetPrompt(r)
+							continue
+						}
 						result[0].User = users[id]
 					}
 				}

@@ -2,7 +2,7 @@ global:
     port: 22
     user: root
     key: /root/.ssh/id.rsa
-servers:
+endpoints:
   - name: 001
     ip: 001.luopengift.com
     user: luopengift

@@ -17,13 +17,14 @@ type Config struct {
 	Backup             string        `json:"backup" yaml:"backup"` // 是否支持审计模式
 	Global             *ssh.Endpoint `json:"global" yaml:"global"` // global config
 	endpoint.Endpoints `json:"endpoints" yaml:"endpoints"`
-	//result             endpoint.Endpoints
 }
 
 // Init config init
 func Init() *Config {
 	return &Config{}
 }
+
+// LoadConfig loadconfig form a file
 func (c *Config) LoadConfig(f string) error {
 	if err := types.ParseConfigFile(f, c); err != nil {
 		return err
@@ -131,6 +132,7 @@ func (c *Config) ConsoleAdd() error {
 	return nil
 }
 
+// Dump config to a file
 func (c *Config) Dump(f string) error {
 	b, err := types.ToYAML(c)
 	if err != nil {

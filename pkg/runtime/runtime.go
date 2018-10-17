@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 
 // Runtime runtime, parse shell cmd `who` or `who -m`
 type Runtime struct {
+	Super     bool //超级模式
 	User      string
 	Tty       string
 	Date      string
@@ -17,6 +19,17 @@ type Runtime struct {
 	Endpoints endpoint.Endpoints
 }
 
+func (r *Runtime) String() string {
+	var ps string
+	if r.Super {
+		ps = "+"
+	} else {
+		ps = ">"
+	}
+	return fmt.Sprintf("[%s]%s ", os.Getenv("USER"), ps)
+}
+
+// SetEndpoints set endpoints
 func (r *Runtime) SetEndpoints(eps endpoint.Endpoints) {
 	r.Endpoints = eps
 }

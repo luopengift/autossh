@@ -2,7 +2,6 @@ package console
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path"
 	"strconv"
@@ -41,13 +40,13 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 	}
 	r.SetEndpoints(conf.Endpoints)
 	welcome()
-	rl, err := readline.New(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
+	rl, err := readline.New(r)
 	if err != nil {
 		return err
 	}
 	defer rl.Close()
 	for {
-		rl.SetPrompt(readline.StaticPrompt(fmt.Sprintf("%s> ", os.Getenv("USER"))))
+
 		input, err := rl.Readline()
 		if err != nil {
 			return err
@@ -61,11 +60,15 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		case input == "config":
 			log.Display("config", conf)
 		case input == "add": // 新增一台主机
-			if false {
+			if r.Super {
 				if err = conf.ConsoleAdd(); err != nil {
 					log.ConsoleWithRed("%v", err)
 				}
+				r.SetEndpoints(conf.Endpoints)
 			}
+		case input == "set-super":
+			r.Super = true
+			log.ConsoleWithMagenta("进入Super模式!")
 		case strings.HasPrefix(input, "print "):
 			if !conf.Debug {
 				continue
@@ -84,7 +87,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				log.Info("Hello~@~")
 			}
 		case strings.HasPrefix(input, "dump "): // 存储配置文件
-			if false {
+			if r.Super {
 				inputList := strings.Split(input, " ")
 				if len(inputList) != 2 {
 					log.ConsoleWithRed("输入有误! 请输入H/h 查看帮助.")
@@ -97,6 +100,11 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				}
 			}
 		case input == "q", input == "Q", input == "quit", input == "exit":
+			if r.Super {
+				r.Super = false
+				log.ConsoleWithMagenta("退出Super模式.")
+				continue
+			}
 			log.ConsoleWithGreen("exit...")
 			return nil
 		case input == "h", input == "H", input == "help":
@@ -157,6 +165,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				}
 			}
 			r.SetEndpoints(conf.Endpoints)
+			rl.SetPrompt(r)
 		default:
 			if conf.Shell {
 				Bash(ctx, input, nil)

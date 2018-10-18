@@ -9,6 +9,7 @@ import (
 	"github.com/luopengift/ssh"
 )
 
+// Endpoints ssh.Endpoint slice
 type Endpoints []*ssh.Endpoint
 
 // Println println
@@ -45,4 +46,19 @@ func (eps Endpoints) Match(match string) Endpoints {
 	}
 	eps = result
 	return eps
+}
+
+// Len implements sort.Interface
+func (eps Endpoints) Len() int {
+	return len(eps)
+}
+
+// Less implements sort.Interface
+func (eps Endpoints) Less(i, j int) bool {
+	return eps[i].IP < eps[j].IP
+}
+
+// Swap implements sort.Interface
+func (eps Endpoints) Swap(i, j int) {
+	eps[i], eps[j] = eps[j], eps[i]
 }

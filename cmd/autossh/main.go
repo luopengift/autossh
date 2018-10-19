@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	log.GetLogger("__ROOT__").SetFormatter(log.NewTextFormat("MESSAGE", log.ModeColor))
 	conf := config.Init()
 	conf.LoadRootConfig()
+	log.SetLevel(log.INFO).SetTextFormat("MESSAGE", log.ModeColor)
 	if err := cmd.Exec(context.Background(), conf); err != nil {
 		log.Error("%v", err)
 	}

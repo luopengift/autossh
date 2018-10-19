@@ -2,8 +2,10 @@ package console
 
 import (
 	"context"
+	"net"
 	"os"
 	"path"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -115,58 +117,79 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				continue
 			}
 			log.ConsoleWithGreen("查询[%s]中,请稍后...", inputList[1])
-			var result []*ssh.Endpoint
-			result = conf.Match(inputList[1])
-			if len(result) != 1 {
+			result := conf.Match(inputList[1])
+			log.Debug("查询结果: %#v", result)
+			endpoint := ssh.NewEndpoint()
+			switch len(result) {
+			case 0: //未查询到Endpoint
+				if !r.Super {
+					continue
+				}
+				if strings.Contains(inputList[1], "@") {
+					d := strings.Split(inputList[1], "@")
+					endpoint.User, endpoint.IP = d[0], d[1]
+				} else {
+					endpoint.IP = inputList[1]
+				}
+				re := regexp.MustCompile(`[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}`)
+				endpoint.IP = strings.Replace(re.FindString(endpoint.IP), "-", ".", -1)
+				if ip := net.ParseIP(endpoint.IP); ip == nil {
+					log.ConsoleWithRed("输入IP[%s]有误!", inputList[1])
+					continue
+				}
+				endpoint.Mask(conf.Global)
+
+			case 1: //查询到1个
+				endpoint.Mask(result[0])
+				users, _ := endpoint.GetUsers()
+				switch len(users) {
+				case 0: //未查询到user
+					return nil
+				case 1:
+					endpoint.User = users[0]
+				default:
+					log.ConsoleWithGreen("[ID]\t用户名")
+					for idx, user := range users {
+						log.ConsoleWithGreen("[%v]\t%s", idx, user)
+					}
+					log.ConsoleWithBlue("授权登陆用户超过1个, 请输入ID选择.")
+					rl.SetPrompt(readline.StaticPrompt("输入用户/用户序号> "))
+					inputUser, err := rl.Readline()
+					if err != nil {
+						return err
+					}
+
+					id, err := strconv.Atoi(inputUser) // 尝试将inputUser转换成数字, 如果成功的话, 则判断输入为ID
+					if err != nil {
+						endpoint.User = inputUser
+					} else {
+						if id > len(users) {
+							log.ConsoleWithRed("输入有误!")
+							rl.SetPrompt(r)
+							continue
+						}
+						endpoint.User = users[id]
+					}
+				}
+			default: //查询到多个
 				continue
 			}
-			users, flag := result[0].GetUsers()
-			switch len(users) {
-			case 0:
-				return nil
-			case 1:
-				result[0].User = users[0]
-			default:
-				log.ConsoleWithGreen("[ID]\t用户名")
-				for idx, user := range users {
-					log.ConsoleWithGreen("[%v]\t%s", idx, user)
-				}
-				log.ConsoleWithBlue("授权登陆用户超过1个, 请输入ID选择.")
-				rl.SetPrompt(readline.StaticPrompt("输入用户/用户序号> "))
-				inputUser, err := rl.Readline()
-				if err != nil {
-					return err
-				}
-
-				id, err := strconv.Atoi(inputUser) // 尝试将inputUser转换成数字, 如果成功的话, 则判断输入为ID
-				if err != nil {
-					result[0].User = inputUser
-				} else {
-					if id > len(users) {
-						log.ConsoleWithRed("输入有误!")
-						rl.SetPrompt(r)
-						continue
-					}
-					result[0].User = users[id]
-				}
-			}
-			log.ConsoleWithGreen("正在使用用户[%s]登录 %s:%s", result[0].User, result[0].IP, result[0].Port)
+			log.Debug("endpoint: %#v", endpoint)
+			log.ConsoleWithGreen("正在使用用户[%s]登录 %s:%s", endpoint.User, endpoint.IP, endpoint.Port)
 			if conf.Backup != "" {
-				filepath := path.Join(conf.Backup, os.Getenv("USER"), result[0].IP+time.Now().Format("20060102150405.log"))
+				filepath := path.Join(conf.Backup, os.Getenv("USER"), endpoint.IP+time.Now().Format("20060102150405.log"))
 				f, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 				if err != nil {
 					log.Error("%v", err)
 					continue
 				}
 				defer f.Close()
-				result[0].SetWriters(f)
+				endpoint.SetWriters(f)
 			}
-			if err = result[0].StartTerminal(); err != nil {
+			if err = endpoint.StartTerminal(); err != nil {
 				log.ConsoleWithRed("%v", err)
 			}
-			if !flag {
-				result[0].User = ""
-			}
+
 			r.SetEndpoints(conf.Endpoints)
 			rl.SetPrompt(r)
 		default:

@@ -13,8 +13,8 @@ type Fetch struct {
 	Dest string `json:"dest" yaml:"dest"`
 }
 
-// Init init
-func (mod *Fetch) Init(cmd string) error {
+// Parse parse
+func (mod *Fetch) Parse(cmd string) error {
 	args, err := parseArgs(cmd)
 	if err != nil {
 		return err

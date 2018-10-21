@@ -10,7 +10,7 @@ import (
 // Moduler module interface
 type Moduler interface {
 	Name() string
-	Init(command string) error
+	Parse(command string) error
 	Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error)
 }
 

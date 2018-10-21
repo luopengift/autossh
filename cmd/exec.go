@@ -12,15 +12,15 @@ import (
 	"github.com/luopengift/version"
 )
 
-// Exec exec
-func Exec(ctx context.Context, conf *config.Config) error {
+// Run run
+func Run(ctx context.Context, conf *config.Config) error {
 	var err error
 	params := NewParams()
-	if params.Version {
+
+	switch {
+	case params.Version:
 		fmt.Println(version.VERSION)
 		return nil
-	}
-	switch {
 	case len(os.Args) < 3: //登录交互模式
 		if conf.Remote { // 远程获取模式
 

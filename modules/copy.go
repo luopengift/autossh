@@ -18,8 +18,8 @@ func (mod *Copy) Name() string {
 	return "copy"
 }
 
-// Init init
-func (mod *Copy) Init(cmd string) error {
+// Parse parse
+func (mod *Copy) Parse(cmd string) error {
 	args, err := parseArgs(cmd)
 	if err != nil {
 		return err

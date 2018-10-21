@@ -42,13 +42,16 @@ type Result struct {
 }
 
 // Execute Execute
-func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
+func (b *Batch) Execute(endpoints []*ssh.Endpoint, mod, args string) error {
 	startTime := time.Now()
+	if len(endpoints) == 0 {
+		return fmt.Errorf(`主机数量为0, 请使用"-i/-files"指定`)
+	}
 	module, ok := modules.Modules[mod]
 	if !ok {
 		return fmt.Errorf("module missing: %v", mod)
 	}
-	if err := module.Init(args); err != nil {
+	if err := module.Parse(args); err != nil {
 		return fmt.Errorf("module init error: %v", err)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(b.timeout)*time.Second)
@@ -58,13 +61,13 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 			res, _ := b.results.Get()
 			result := res.(Result)
 			b.displayResult(b.results.Total(), result)
-			if b.results.Total() == int64(len(servers)) {
+			if b.results.Total() == int64(len(endpoints)) {
 				b.quit <- true
 			}
 		}
 	}()
 
-	for _, endpoint := range servers {
+	for _, endpoint := range endpoints {
 		b.workers.Add()
 		go func(ctx context.Context, endpoint *ssh.Endpoint) {
 			result := Result{Addr: endpoint.IP}
@@ -76,9 +79,9 @@ func (b *Batch) Execute(servers []*ssh.Endpoint, mod, args string) error {
 	format := "[主机数量]:%d, [成功]:%d, [失败]:%d, [超时]:%d|[执行时间]:%s"
 	select {
 	case <-ctx.Done():
-		log.Warn(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
+		log.Warn(format, len(endpoints), b.succ, b.fail, len(endpoints)-b.succ-b.fail, time.Since(startTime).String())
 	case <-b.quit:
-		log.Info(format, len(servers), b.succ, b.fail, len(servers)-b.succ-b.fail, time.Since(startTime).String())
+		log.Info(format, len(endpoints), b.succ, b.fail, len(endpoints)-b.succ-b.fail, time.Since(startTime).String())
 
 	}
 	return nil

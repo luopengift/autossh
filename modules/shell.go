@@ -8,11 +8,11 @@ import (
 
 // Shell Execute commands in nodes.
 type Shell struct {
-	Command string
+	Command string `json:"command" yaml:"commad"`
 }
 
-// Init init
-func (mod *Shell) Init(cmd string) error {
+// Parse parse
+func (mod *Shell) Parse(cmd string) error {
 	mod.Command = cmd
 	return nil
 }

@@ -14,22 +14,22 @@ type Fetch struct {
 }
 
 // Parse parse
-func (mod *Fetch) Parse(cmd string) error {
+func (s *Fetch) Parse(cmd string) error {
 	args, err := parseArgs(cmd)
 	if err != nil {
 		return err
 	}
-	return types.Format(args, mod)
+	return types.Format(args, s)
 }
 
 // Name name
-func (mod *Fetch) Name() string {
+func (s *Fetch) Name() string {
 	return "fetch"
 }
 
 // Run run
-func (mod *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	return nil, endpoint.Download(mod.Src, mod.Dest)
+func (s *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
+	return nil, endpoint.Download(s.Src, s.Dest)
 }
 
 func init() {

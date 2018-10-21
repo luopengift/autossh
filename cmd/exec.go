@@ -8,6 +8,7 @@ import (
 	"github.com/luopengift/autossh/command"
 	"github.com/luopengift/autossh/config"
 	"github.com/luopengift/autossh/console"
+	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/version"
 )
@@ -20,6 +21,10 @@ func Run(ctx context.Context, conf *config.Config) error {
 	switch {
 	case params.Version:
 		fmt.Println(version.VERSION)
+		return nil
+	case params.Debug:
+		log.Display("params", params)
+		log.Display("config", conf)
 		return nil
 	case len(os.Args) < 3: //登录交互模式
 		if conf.Remote { // 远程获取模式
@@ -37,6 +42,7 @@ func Run(ctx context.Context, conf *config.Config) error {
 		}
 		for _, ip := range hosts {
 			endpoint := ssh.NewEndpointWithValue("", "", ip, params.Port, params.User, params.Password, params.Key)
+			endpoint.SetPseudo(params.Pseudo)
 			conf.Endpoints = append(conf.Endpoints, endpoint)
 		}
 		batch := command.NewBatch(params.Fork, params.Timeout)

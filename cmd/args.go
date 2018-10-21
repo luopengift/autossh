@@ -20,6 +20,7 @@ type Params struct {
 	ipFiles  string
 	Group    string
 	Timeout  int
+	Pseudo   bool
 	Debug    bool
 	Batch    bool
 	Module   string
@@ -58,7 +59,8 @@ func NewParams() *Params {
 	ipList := flag.String("i", "", `IP地址列表,使用","分割`)
 	ipFiles := flag.String("files", "", `IP列表文件,使用"\n"分格,多个文件用";"区分`)
 	group := flag.String("g", "", "(group)主机组")
-	timeout := flag.Int("t", 120, "(timeout)超时时间(单位:秒)")
+	timeout := flag.Int("timeout", 120, "(timeout)超时时间(单位:秒)")
+	pseudo := flag.Bool("t", false, "(pseudo)pseudo-terminal allocation")
 	debug := flag.Bool("debug", false, "(debug)HTTP调试模式[http://debug(IP:PORT)/debug/pporf/]")
 	batch := flag.Bool("b", false, "(batch)批量执行模式")
 	module := flag.String("m", "", "(module)执行模块")
@@ -77,6 +79,7 @@ func NewParams() *Params {
 		ipFiles:  *ipFiles,
 		Group:    *group,
 		Timeout:  *timeout,
+		Pseudo:   *pseudo,
 		Debug:    *debug,
 		Batch:    *batch,
 		Module:   *module,

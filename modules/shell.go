@@ -12,19 +12,19 @@ type Shell struct {
 }
 
 // Parse parse
-func (mod *Shell) Parse(cmd string) error {
-	mod.Command = cmd
+func (s *Shell) Parse(cmd string) error {
+	s.Command = cmd
 	return nil
 }
 
 // Name name
-func (mod *Shell) Name() string {
+func (s *Shell) Name() string {
 	return "shell"
 }
 
 // Run run module
-func (mod *Shell) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	return endpoint.CmdOutBytes(mod.Command)
+func (s *Shell) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
+	return endpoint.CmdOutBytes(s.Command)
 }
 
 func init() {

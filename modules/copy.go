@@ -37,6 +37,7 @@ func (s *Copy) Parse(cmd string) error {
 
 // Run run
 func (s *Copy) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
+	defer endpoint.Close()
 	return nil, endpoint.Upload(s.Src, s.Dest, 0644)
 }
 

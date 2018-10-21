@@ -189,7 +189,9 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			if err = endpoint.StartTerminal(); err != nil {
 				log.ConsoleWithRed("%v", err)
 			}
-
+			if err = endpoint.Close(); err != nil {
+				log.ConsoleWithRed("%v", err)
+			}
 			r.SetEndpoints(conf.Endpoints)
 			rl.SetPrompt(r)
 		default:

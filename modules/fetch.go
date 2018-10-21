@@ -29,6 +29,7 @@ func (s *Fetch) Name() string {
 
 // Run run
 func (s *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
+	defer endpoint.Close()
 	return nil, endpoint.Download(s.Src, s.Dest)
 }
 

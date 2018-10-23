@@ -17,6 +17,7 @@ type Runtime struct {
 	Date      string
 	IP        string
 	Endpoints endpoint.Endpoints
+	Groups    *endpoint.Groups
 }
 
 func (r *Runtime) String() string {
@@ -32,6 +33,12 @@ func (r *Runtime) String() string {
 // SetEndpoints set endpoints
 func (r *Runtime) SetEndpoints(eps endpoint.Endpoints) {
 	r.Endpoints = eps
+	r.SyncGroups("Group")
+}
+
+// SyncGroups sync groups
+func (r *Runtime) SyncGroups(kind string) {
+	r.Groups = r.Endpoints.Groups(kind)
 }
 
 func (r *Runtime) parse(out string) {

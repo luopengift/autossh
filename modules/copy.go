@@ -15,6 +15,7 @@ type Copy struct {
 	Mode os.FileMode `json:"mode" yaml:"mode"`
 }
 
+// NewCopy init copy
 func NewCopy() *Copy {
 	return &Copy{
 		Mode: 0644,
@@ -22,7 +23,7 @@ func NewCopy() *Copy {
 }
 
 // Name name
-func (mod *Copy) Name() string {
+func (s *Copy) Name() string {
 	return "copy"
 }
 
@@ -38,7 +39,7 @@ func (s *Copy) Parse(cmd string) error {
 // Run run
 func (s *Copy) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
 	defer endpoint.Close()
-	return nil, endpoint.Upload(s.Src, s.Dest, 0644)
+	return nil, endpoint.Upload(s.Src, s.Dest, s.Mode)
 }
 
 func init() {

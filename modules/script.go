@@ -7,6 +7,7 @@ import (
 	"github.com/luopengift/ssh"
 )
 
+// Script script module
 type Script struct {
 	Path string `json:"path" yaml:"path"`
 }

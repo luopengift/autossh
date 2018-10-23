@@ -24,6 +24,7 @@ func welcome() {
 	log.ConsoleWithGreen("")
 	for idx, v := range []string{
 		"输入P/p 查看机器列表.",
+		"输入G/g 查看主机分组",
 		"输入s + IP,主机名 搜索.",
 		"输入V/v 查看版本号.",
 		"输入H/h 帮助.",
@@ -55,7 +56,9 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		input = strings.TrimSpace(input)
 		switch {
 		case input == "P", input == "p":
-			conf.Println()
+			r.Endpoints.PrintEndpoints()
+		case input == "G", input == "g":
+			r.Groups.PrintGroups()
 		case input == "V", input == "v", input == "version", input == "-v", input == "-version", input == "--version":
 			log.ConsoleWithGreen("version: %v, buildTime: %v, buildTag: %v", version.VERSION, version.TIME, version.GIT)
 		case input == "add": // 新增一台主机

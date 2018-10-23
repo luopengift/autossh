@@ -9,19 +9,43 @@ import (
 	"github.com/luopengift/ssh"
 )
 
+var endpointFormat = "%-4v\t%-20s\t%-40s\t%-5s"
+
+func printEndpoint(idx int, endpoint *ssh.Endpoint) string {
+	users, _ := endpoint.GetUsers()
+	return fmt.Sprintf(endpointFormat, idx, endpoint.Name, endpoint.Address(), "[ "+strings.Join(users, ", ")+" ]")
+}
+
 // Endpoints ssh.Endpoint slice
 type Endpoints []*ssh.Endpoint
 
-// Println println
-func (eps Endpoints) Println() {
-	format := "%-4v\t%-20s\t%-40s\t%-5s"
-	log.ConsoleWithGreen(fmt.Sprintf(format, "序号", "名称", "地址", "用户名"))
+// PrintEndpoints PrintEndpoints
+func (eps Endpoints) PrintEndpoints() {
+	log.ConsoleWithGreen(fmt.Sprintf(endpointFormat, "序号", "名称", "地址", "用户名"))
 	for index, endpoint := range eps {
-		users, _ := endpoint.GetUsers()
-		log.ConsoleWithGreen(
-			fmt.Sprintf(format, index, endpoint.Name, endpoint.Address(), "[ "+strings.Join(users, ", ")+" ]"),
-		)
+		log.ConsoleWithGreen(printEndpoint(index, endpoint))
 	}
+}
+
+// Groups groups
+func (eps Endpoints) Groups(kind string) *Groups {
+	set := make(map[string]struct{})
+	g := &Groups{
+		Kind:   kind,
+		List:   []string{},
+		Groups: map[string]Endpoints{},
+	}
+	g.Kind = kind
+	for _, endpoint := range eps {
+		if grp, ok := endpoint.Labels[kind]; ok {
+			g.Groups[grp] = append(g.Groups[grp], endpoint)
+			set[grp] = struct{}{}
+		}
+	}
+	for key := range set {
+		g.List = append(g.List, key)
+	}
+	return g
 }
 
 // Search search

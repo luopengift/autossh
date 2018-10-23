@@ -19,8 +19,8 @@ func printEndpoint(idx int, endpoint *ssh.Endpoint) string {
 // Endpoints ssh.Endpoint slice
 type Endpoints []*ssh.Endpoint
 
-// PrintEndpoints PrintEndpoints
-func (eps Endpoints) PrintEndpoints() {
+// Print PrintEndpoints
+func (eps Endpoints) Print() {
 	log.ConsoleWithGreen(fmt.Sprintf(endpointFormat, "序号", "名称", "地址", "用户名"))
 	for index, endpoint := range eps {
 		log.ConsoleWithGreen(printEndpoint(index, endpoint))
@@ -56,8 +56,7 @@ func (eps Endpoints) Search(search string) Endpoints {
 			result = append(result, endpoint)
 		}
 	}
-	eps = result
-	return eps
+	return result
 }
 
 // Match match
@@ -68,8 +67,7 @@ func (eps Endpoints) Match(match string) Endpoints {
 			result = append(result, endpoint)
 		}
 	}
-	eps = result
-	return eps
+	return result
 }
 
 // Len implements sort.Interface

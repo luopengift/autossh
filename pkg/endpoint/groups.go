@@ -17,15 +17,16 @@ type Groups struct {
 	Groups map[string]Endpoints
 }
 
+// Len len
 func (grps *Groups) Len() int {
 	return len(grps.List)
 }
 
 // Print PrintGroups
 func (grps *Groups) Print() {
-	log.ConsoleWithGreen(fmt.Sprintf(groupFormat, "序号", "组名称", "主机数量"))
+	log.ConsoleWithGreen(fmt.Sprintf(groupFormat, "[序号]", "组名称", "主机数量"))
 	for idx, kind := range grps.List {
-		log.ConsoleWithGreen(groupFormat, idx, kind, len(grps.Groups[kind]))
+		log.ConsoleWithGreen(groupFormat, fmt.Sprintf("[%v]", idx), kind, len(grps.Groups[kind]))
 	}
 }
 

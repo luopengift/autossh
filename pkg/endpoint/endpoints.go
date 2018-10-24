@@ -9,11 +9,11 @@ import (
 	"github.com/luopengift/ssh"
 )
 
-var endpointFormat = "%-4v\t%-20s\t%-40s\t%-5s"
+var endpointFormat = "%-3v\t%-20s\t%-40s\t%-20s\t%-10s"
 
 func printEndpoint(idx int, endpoint *ssh.Endpoint) string {
 	users, _ := endpoint.GetUsers()
-	return fmt.Sprintf(endpointFormat, idx, endpoint.Name, endpoint.Address(), "[ "+strings.Join(users, ", ")+" ]")
+	return fmt.Sprintf(endpointFormat, fmt.Sprintf("[%v]", idx), endpoint.Name, endpoint.Address(), fmt.Sprintf("[%v]", strings.Join(users, ", ")), endpoint.Labels["Group"])
 }
 
 // Endpoints ssh.Endpoint slice
@@ -21,7 +21,7 @@ type Endpoints []*ssh.Endpoint
 
 // Print PrintEndpoints
 func (eps Endpoints) Print() {
-	log.ConsoleWithGreen(fmt.Sprintf(endpointFormat, "序号", "名称", "地址", "用户名"))
+	log.ConsoleWithGreen(fmt.Sprintf(endpointFormat, "[序号]", "名称", "地址", "用户名", "组"))
 	for index, endpoint := range eps {
 		log.ConsoleWithGreen(printEndpoint(index, endpoint))
 	}

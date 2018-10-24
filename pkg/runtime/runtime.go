@@ -2,8 +2,8 @@ package runtime
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 
 	"github.com/luopengift/autossh/pkg/endpoint"
@@ -27,7 +27,7 @@ func (r *Runtime) String() string {
 	} else {
 		ps = ">"
 	}
-	return fmt.Sprintf("[%s]%s ", os.Getenv("USER"), ps)
+	return fmt.Sprintf("[%s]%s ", user.Current(), ps)
 }
 
 // SetEndpoints set endpoints

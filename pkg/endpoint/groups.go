@@ -24,7 +24,7 @@ func (grps *Groups) Len() int {
 
 // Print PrintGroups
 func (grps *Groups) Print() {
-	log.ConsoleWithGreen(fmt.Sprintf(groupFormat, "[序号]", "组名称", "主机数量"))
+	log.ConsoleWithGreen(groupFormat, "[ID]", "组名称", "主机数量")
 	for idx, kind := range grps.List {
 		log.ConsoleWithGreen(groupFormat, fmt.Sprintf("[%v]", idx), kind, len(grps.Groups[kind]))
 	}

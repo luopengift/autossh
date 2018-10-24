@@ -4,131 +4,16 @@ import (
 	"context"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/luopengift/autossh/config"
-	"github.com/luopengift/autossh/pkg/endpoint"
 	"github.com/luopengift/autossh/pkg/runtime"
 	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
 	"github.com/luopengift/version"
 )
-
-// Welcome first time into console
-func welcome() {
-	log.ConsoleWithBlue("### 欢迎使用Autossh Jump System[%s] ###", time.Now().Format("2006/01/02 15:04:05"))
-	log.ConsoleWithGreen("")
-	for idx, v := range []string{
-		"输入 P/p 查看主机列表.",
-		"输入 G/g 查看主机分组",
-		"输入 s + IP 直接登录.",
-		"输入 V/v 查看版本号.",
-		"输入 H/h 帮助.",
-		"输入 Q/q 退出.",
-	} {
-		log.ConsoleWithGreen("\t%d) %s", idx, v)
-	}
-	log.ConsoleWithGreen("")
-}
-
-func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endpoint.Endpoints, error) {
-	endpoints.Print()
-	if len(endpoints) == 1 {
-		return endpoints, nil
-	}
-	ins.SetPrompt(readline.StaticPrompt("输入ID/IP/主机> "))
-	input, err := ins.Readline()
-	if err != nil {
-		return nil, err
-	}
-	if isExit(input) {
-		return nil, log.Errorf("exit")
-	}
-	result := endpoints.Search(input)
-	switch len(result) {
-	case 0:
-		return searchEndpoints(ins, endpoints)
-	case 1:
-		return result, nil
-	default:
-		return searchEndpoints(ins, result)
-	}
-
-}
-
-func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Groups, error) {
-	groups.Print()
-	if len(groups.List) == 1 {
-		return groups, nil
-	}
-	ins.SetPrompt(readline.StaticPrompt("输入ID/主机组> "))
-	input, err := ins.Readline()
-	if err != nil {
-		return nil, err
-	}
-	if isExit(input) {
-		return nil, log.Errorf("exit")
-	}
-	result := groups.Search(input)
-	switch len(result.List) {
-	case 0:
-		return searchGroups(ins, groups)
-	case 1:
-		return result, nil
-	default:
-		return searchGroups(ins, result)
-	}
-}
-
-// Users users
-type Users []string
-
-// Print print users
-func (s Users) Print() {
-	log.ConsoleWithGreen("ID\t用户名")
-	for idx, user := range s {
-		log.ConsoleWithGreen("[%v]\t%s", idx, user)
-	}
-}
-
-// Search search
-func (s Users) Search(input string) Users {
-	var result Users
-	for index, user := range s {
-		if input == strconv.Itoa(index) || strings.Contains(user, input) {
-			result = append(result, user)
-		}
-	}
-	return result
-}
-
-func searchUsers(ins *readline.Instance, users Users) ([]string, error) {
-	if len(users) == 1 {
-		return users, nil
-	}
-	users.Print()
-	ins.SetPrompt(readline.StaticPrompt("输入用户/用户序号> "))
-	input, err := ins.Readline()
-	if err != nil {
-		return nil, err
-	}
-	if isExit(input) {
-		return nil, log.Errorf("exit")
-	}
-	// search
-	result := users.Search(input)
-	switch len(result) {
-	case 0:
-		return searchUsers(ins, users)
-	case 1:
-		return result, nil
-	default:
-		return searchUsers(ins, result)
-	}
-}
 
 // Login login
 func Login(endpoint *ssh.Endpoint, conf *config.Config) error {
@@ -158,7 +43,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		return err
 	}
 	r.SetEndpoints(conf.Endpoints)
-	welcome()
+	help()
 	rl, err := readline.New(r)
 	if err != nil {
 		return err
@@ -193,14 +78,12 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				log.ConsoleWithRed("%v", err)
 				continue
 			}
-
 			endpoints := groups.Groups[groups.List[0]]
 			endpoints, err = searchEndpoints(rl, endpoints)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)
 				continue
 			}
-
 			endpoint := endpoints[0].Copy()
 			users, _ := endpoint.GetUsers()
 			users, err = searchUsers(rl, users)
@@ -248,7 +131,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			log.ConsoleWithGreen("exit...")
 			return nil
 		case isHelp(input):
-			welcome()
+			help()
 		case input == "qa":
 			// question and answer
 		case strings.HasPrefix(input, "s "):

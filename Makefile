@@ -24,7 +24,7 @@ Darwin:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 ${GO} build ${FLAG} ${linux} $(MAIN)
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 ${GO} build ${FLAG} ${windows} $(MAIN)
 Linux:
-	go build ${FLAG} ${linux} $(MAIN)
+	${GO} build ${FLAG} ${linux} $(MAIN)
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 ${GO} build ${FLAG} ${darwin} $(MAIN)
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 ${GO} build ${FLAG} ${windows} $(MAIN)
 Windows:

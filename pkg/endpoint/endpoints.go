@@ -9,7 +9,7 @@ import (
 	"github.com/luopengift/ssh"
 )
 
-var endpointFormat = "%-3v\t%-20s\t%-40s\t%-20s\t%-10s"
+var endpointFormat = "%-3v\t%-64s\t%-40s\t%-20s\t%-10s"
 
 // Endpoints ssh.Endpoint slice
 type Endpoints []*ssh.Endpoint

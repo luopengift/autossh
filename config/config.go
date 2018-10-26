@@ -46,7 +46,17 @@ func (c *Config) LoadUserConfig() error {
 		return err
 	}
 	c.UseGlobalValues()
-	//c.Reset()
+	return nil
+}
+
+// LoadEndpointsConfig load endpoints config
+func (c *Config) LoadEndpointsConfig() error {
+	newconfig := &Config{} //为了保证user config.endpoints 不被覆盖
+	if err := newconfig.LoadConfig("~/.autossh/endpoints.yml"); err != nil {
+		return err
+	}
+	c.Endpoints = append(c.Endpoints, newconfig.Endpoints...)
+	c.UseGlobalValues()
 	return nil
 }
 

@@ -8,7 +8,7 @@ import (
 	"github.com/luopengift/log"
 )
 
-var groupFormat = "%-4v\t%-20s\t%-40v"
+var groupFormat = "%-4v\t%-64s\t%-40v"
 
 // Groups groups
 type Groups struct {

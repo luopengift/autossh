@@ -33,6 +33,9 @@ func Run(ctx context.Context, conf *config.Config) error {
 			if err = conf.LoadUserConfig(); err != nil {
 				return err
 			}
+			if err = conf.LoadEndpointsConfig(); err != nil {
+				return err
+			}
 		}
 		return console.StartConsole(ctx, conf)
 	default: //batach模式

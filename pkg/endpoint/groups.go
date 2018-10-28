@@ -31,16 +31,27 @@ func (grps *Groups) Print() {
 }
 
 // Search search
-func (grps *Groups) Search(search string) *Groups {
+func (grps *Groups) Search(search ...string) *Groups {
 	result := &Groups{
 		Kind:   grps.Kind,
 		List:   []string{},
 		Groups: map[string]Endpoints{},
 	}
+
 	for index, group := range grps.List {
-		if search == strconv.Itoa(index) || strings.Contains(group, search) {
-			result.List = append(result.List, group)
-			result.Groups[group] = grps.Groups[group]
+		if len(search) == 1 {
+			if search[0] == strconv.Itoa(index) {
+				result.List = append(result.List, group)
+				result.Groups[group] = grps.Groups[group]
+				continue
+			}
+		}
+		for _, query := range search {
+			if strings.Contains(group, query) {
+				result.List = append(result.List, group)
+				result.Groups[group] = grps.Groups[group]
+				continue
+			}
 		}
 	}
 	return result

@@ -26,7 +26,8 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endp
 
 	var result endpoint.Endpoints
 	if strings.HasPrefix(input, "s ") {
-		result = endpoints.Search(strings.TrimPrefix(input, "s "))
+		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
+		result = endpoints.Search(inputList...)
 	} else {
 		result = endpoints.Match(input)
 	}
@@ -60,7 +61,8 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Gr
 
 	var result *endpoint.Groups
 	if strings.HasPrefix(input, "s ") {
-		result = groups.Search(strings.TrimPrefix(input, "s "))
+		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
+		result = groups.Search(inputList...)
 	} else {
 		result = groups.Match(input)
 	}
@@ -93,7 +95,8 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 
 	var result endpoint.Users
 	if strings.HasPrefix(input, "s ") {
-		result = users.Search(strings.TrimPrefix(input, "s "))
+		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
+		result = users.Search(inputList...)
 	} else {
 		result = users.Match(input)
 	}

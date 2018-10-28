@@ -45,10 +45,10 @@ func (eps Endpoints) Groups(kind string) *Groups {
 }
 
 // Search search
-func (eps Endpoints) Search(search string) Endpoints {
+func (eps Endpoints) Search(search ...string) Endpoints {
 	result := Endpoints{}
 	for index, endpoint := range eps {
-		if search == strconv.Itoa(index) || strings.Contains(endpoint.Name, search) || strings.Contains(endpoint.Host, search) || strings.Contains(endpoint.IP, search) {
+		if FindWithIdx(endpoint, index, search...) {
 			result = append(result, endpoint)
 		}
 	}

@@ -22,11 +22,20 @@ func (s Users) Print() {
 }
 
 // Search search
-func (s Users) Search(input string) Users {
+func (s Users) Search(querys ...string) Users {
 	var result Users
 	for index, user := range s {
-		if input == strconv.Itoa(index) || strings.Contains(user, input) {
-			result = append(result, user)
+		if len(querys) == 1 {
+			if querys[0] == strconv.Itoa(index) {
+				result = append(result, user)
+				continue
+			}
+		}
+		for _, query := range querys {
+			if strings.Contains(user, query) {
+				result = append(result, user)
+				continue
+			}
 		}
 	}
 	return result

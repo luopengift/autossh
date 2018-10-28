@@ -36,7 +36,9 @@ func getEndpoint(str string) *ssh.Endpoint {
 	} else {
 		endpoint.IP = str
 	}
-	re := regexp.MustCompile(`[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}`)
-	endpoint.IP = strings.Replace(re.FindString(endpoint.IP), "-", ".", -1)
+	if strings.HasPrefix(endpoint.IP, "ip-") { // support aws hostname format
+		re := regexp.MustCompile(`[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}`)
+		endpoint.IP = strings.Replace(re.FindString(endpoint.IP), "-", ".", -1)
+	}
 	return endpoint
 }

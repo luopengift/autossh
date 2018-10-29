@@ -6,6 +6,7 @@ import (
 	"github.com/luopengift/ssh"
 )
 
+// FindWithIdx find
 func FindWithIdx(endpoint *ssh.Endpoint, idx int, querys ...string) bool {
 	if len(querys) == 1 {
 		if querys[0] == strconv.Itoa(idx) {

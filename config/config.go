@@ -26,7 +26,7 @@ func Init() *Config {
 
 // LoadConfig loadconfig form a file
 func (c *Config) LoadConfig(f string) error {
-	if err := types.ParseConfigFile(f, c); err != nil {
+	if err := types.ParseConfigFile(c, f); err != nil {
 		return err
 	}
 	return nil

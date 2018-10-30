@@ -3,7 +3,6 @@ package endpoint
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/luopengift/log"
 )
@@ -31,12 +30,12 @@ func (s Users) Search(querys ...string) Users {
 				continue
 			}
 		}
-		for _, query := range querys {
-			if strings.Contains(user, query) {
-				result = append(result, user)
-				continue
-			}
+
+		if Find(user, querys...) {
+			result = append(result, user)
+
 		}
+
 	}
 	return result
 }

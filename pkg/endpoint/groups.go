@@ -3,7 +3,6 @@ package endpoint
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/luopengift/log"
 )
@@ -31,7 +30,7 @@ func (grps *Groups) Print() {
 }
 
 // Search search
-func (grps *Groups) Search(search ...string) *Groups {
+func (grps *Groups) Search(querys ...string) *Groups {
 	result := &Groups{
 		Kind:   grps.Kind,
 		List:   []string{},
@@ -39,19 +38,17 @@ func (grps *Groups) Search(search ...string) *Groups {
 	}
 
 	for index, group := range grps.List {
-		if len(search) == 1 {
-			if search[0] == strconv.Itoa(index) {
+		if len(querys) == 1 {
+			if querys[0] == strconv.Itoa(index) {
 				result.List = append(result.List, group)
 				result.Groups[group] = grps.Groups[group]
 				continue
 			}
 		}
-		for _, query := range search {
-			if strings.Contains(group, query) {
-				result.List = append(result.List, group)
-				result.Groups[group] = grps.Groups[group]
-				continue
-			}
+
+		if Find(group, querys...) {
+			result.List = append(result.List, group)
+			result.Groups[group] = grps.Groups[group]
 		}
 	}
 	return result

@@ -14,7 +14,7 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endp
 		return endpoints, nil
 	}
 	ins.SetPrompt(readline.StaticPrompt("ID/IP/主机> "))
-	log.ConsoleWithGreen(`输入"s+ID/IP/主机"查询, 或者直接输入"ID/IP/主机"确认.`)
+	log.ConsoleWithGreen(`输入"ID/IP/主机"查询, 或者直接输入"s+ID/IP/主机"确认.`)
 	input, err := ins.Readline()
 	if err != nil {
 		return nil, err
@@ -26,10 +26,10 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endp
 
 	var result endpoint.Endpoints
 	if strings.HasPrefix(input, "s ") {
-		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
-		result = endpoints.Search(inputList...)
+		result = endpoints.Match(strings.TrimPrefix(input, "s "))
 	} else {
-		result = endpoints.Match(input)
+		inputList := strings.Split(input, " ")
+		result = endpoints.Search(inputList...)
 	}
 
 	switch len(result) {
@@ -49,7 +49,7 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Gr
 		return groups, nil
 	}
 	ins.SetPrompt(readline.StaticPrompt("ID/主机组> "))
-	log.ConsoleWithGreen(`输入"s+ID主机组"查询, 或者直接输入"ID/主机组"确认.`)
+	log.ConsoleWithGreen(`输入"ID/主机组"查询, 或者直接输入"s+ID/主机组"确认.`)
 	input, err := ins.Readline()
 	if err != nil {
 		return nil, err
@@ -61,10 +61,10 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Gr
 
 	var result *endpoint.Groups
 	if strings.HasPrefix(input, "s ") {
-		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
-		result = groups.Search(inputList...)
+		result = groups.Match(strings.TrimPrefix(input, "s "))
 	} else {
-		result = groups.Match(input)
+		inputList := strings.Split(input, " ")
+		result = groups.Search(inputList...)
 	}
 
 	switch len(result.List) {
@@ -83,7 +83,7 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 	}
 	users.Print()
 	ins.SetPrompt(readline.StaticPrompt("ID/用户名> "))
-	log.ConsoleWithGreen(`输入"s+ID/用户名"查询, 或者直接输入"ID/用户名"确认.`)
+	log.ConsoleWithGreen(`输入"ID/用户名"查询, 或者直接输入"s+ID/用户名"确认.`)
 	input, err := ins.Readline()
 	if err != nil {
 		return nil, err
@@ -95,10 +95,10 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 
 	var result endpoint.Users
 	if strings.HasPrefix(input, "s ") {
-		inputList := strings.Split(strings.TrimPrefix(input, "s "), " ")
-		result = users.Search(inputList...)
+		result = users.Match(strings.TrimPrefix(input, "s "))
 	} else {
-		result = users.Match(input)
+		inputList := strings.Split(input, " ")
+		result = users.Search(inputList...)
 	}
 
 	switch len(result) {

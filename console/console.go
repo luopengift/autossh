@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/chzyer/readline"
+	"github.com/luopengift/autossh/command"
 	"github.com/luopengift/autossh/config"
 	"github.com/luopengift/autossh/pkg/runtime"
 	"github.com/luopengift/log"
@@ -57,8 +58,29 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		}
 		input = strings.TrimSpace(input)
 		switch {
+		case input == "E", input == "e": //execute command
+			endpoints, err := searchCommand(rl, r.Endpoints, r.Groups)
+			if err != nil {
+				log.ConsoleWithRed("%v", err)
+				continue
+			}
+			for {
+				rl.SetPrompt(readline.StaticPrompt("bash> "))
+				log.ConsoleWithGreen(`输入"命令"批量执行.`)
+				input, err := rl.Readline()
+				if err != nil {
+					return err
+				}
+				input = strings.TrimSpace(input)
+				if isExit(input) {
+					log.ConsoleWithGreen("exit")
+					break
+				}
+				batch := command.NewBatch(10, 120)
+				batch.Execute(endpoints, "shell", input)
+			}
 		case input == "P", input == "p":
-			endpoints, err := searchEndpoints(rl, r.Endpoints)
+			endpoints, err := searchEndpoints(rl, r.Endpoints, true)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)
 				continue
@@ -73,13 +95,13 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			endpoint.User = users[0]
 			Login(endpoint, conf)
 		case input == "G", input == "g":
-			groups, err := searchGroups(rl, r.Groups)
+			groups, err := searchGroups(rl, r.Groups, true)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)
 				continue
 			}
 			endpoints := groups.Groups[groups.List[0]]
-			endpoints, err = searchEndpoints(rl, endpoints)
+			endpoints, err = searchEndpoints(rl, endpoints, true)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)
 				continue

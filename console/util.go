@@ -16,6 +16,10 @@ func include(input string, items ...string) bool {
 	return false
 }
 
+func isNull(str string) bool {
+	return str == ""
+}
+
 func isExit(str string) bool {
 	return include(str, "q", "Q", "quit", "exit")
 }

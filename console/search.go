@@ -1,6 +1,7 @@
 package console
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -8,7 +9,8 @@ import (
 	"github.com/luopengift/log"
 )
 
-func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endpoint.Endpoints, error) {
+// 第三个参数表示是否要求返回唯一结果集.
+func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints, one bool) (endpoint.Endpoints, error) {
 	endpoints.Print()
 	if len(endpoints) == 1 {
 		return endpoints, nil
@@ -23,7 +25,9 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endp
 	if isExit(input) {
 		return nil, log.Errorf("exit")
 	}
-
+	if isNull(input) && !one {
+		return nil, nil
+	}
 	var result endpoint.Endpoints
 	if strings.HasPrefix(input, "s ") {
 		result = endpoints.Match(strings.TrimPrefix(input, "s "))
@@ -31,19 +35,21 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints) (endp
 		inputList := strings.Split(input, " ")
 		result = endpoints.Search(inputList...)
 	}
-
+	fmt.Println("searchEndpoint", result)
+	if !one {
+		return result, nil
+	}
 	switch len(result) {
 	case 0:
-		return searchEndpoints(ins, endpoints)
+		return searchEndpoints(ins, endpoints, one)
 	case 1:
 		return result, nil
 	default:
-		return searchEndpoints(ins, result)
+		return searchEndpoints(ins, result, one)
 	}
-
 }
 
-func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Groups, error) {
+func searchGroups(ins *readline.Instance, groups *endpoint.Groups, one bool) (*endpoint.Groups, error) {
 	groups.Print()
 	if len(groups.List) == 1 {
 		return groups, nil
@@ -58,6 +64,9 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Gr
 	if isExit(input) {
 		return nil, log.Errorf("exit")
 	}
+	if isNull(input) && !one {
+		return nil, nil
+	}
 
 	var result *endpoint.Groups
 	if strings.HasPrefix(input, "s ") {
@@ -67,13 +76,17 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups) (*endpoint.Gr
 		result = groups.Search(inputList...)
 	}
 
+	if !one {
+		return result, nil
+	}
+
 	switch len(result.List) {
 	case 0:
-		return searchGroups(ins, groups)
+		return searchGroups(ins, groups, one)
 	case 1:
 		return result, nil
 	default:
-		return searchGroups(ins, result)
+		return searchGroups(ins, result, one)
 	}
 }
 
@@ -109,4 +122,19 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 	default:
 		return searchUsers(ins, result)
 	}
+}
+
+func searchCommand(ins *readline.Instance, endpoints endpoint.Endpoints, groups *endpoint.Groups) (endpoint.Endpoints, error) {
+	var result endpoint.Endpoints
+	groupList, err := searchGroups(ins, groups, false)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, groupList.Endpoints()...)
+	// endpointList, err := searchEndpoints(ins, endpoints, false)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// result = append(result, endpointList...)
+	return result, nil
 }

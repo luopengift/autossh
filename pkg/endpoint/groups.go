@@ -16,6 +16,15 @@ type Groups struct {
 	Groups map[string]Endpoints
 }
 
+// Endpoints return the list of groups
+func (grps *Groups) Endpoints() Endpoints {
+	var result Endpoints
+	for _, endpoints := range grps.Groups {
+		result = append(result, endpoints...)
+	}
+	return result
+}
+
 // Len len
 func (grps *Groups) Len() int {
 	return len(grps.List)

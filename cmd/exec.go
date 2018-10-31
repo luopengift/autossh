@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/luopengift/autossh/command"
 	"github.com/luopengift/autossh/config"
@@ -35,6 +38,19 @@ func Run(ctx context.Context, conf *config.Config) error {
 			}
 			if err = conf.LoadEndpointsConfig(); err != nil {
 				return err
+			}
+			if conf.Script != "" {
+				script := strings.Replace(conf.Script, "~", os.Getenv("HOME"), -1)
+				b, err := exec.Command(script).CombinedOutput()
+				if err != nil {
+					return err
+				}
+				c := &config.Config{} //为了保证user config.endpoints 不被覆盖
+				if err = json.Unmarshal(b, c); err != nil {
+					return err
+				}
+				conf.Endpoints = append(conf.Endpoints, c.Endpoints...)
+				conf.UseGlobalValues()
 			}
 		}
 		return console.StartConsole(ctx, conf)

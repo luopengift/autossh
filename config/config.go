@@ -15,6 +15,7 @@ type Config struct {
 	Remote             bool          `json:"remote" yaml:"remote"` // 是否开启远程接口获取IP信息
 	Shell              bool          `json:"shell" yaml:"shell"`   // 是否支持本地SHELL模式
 	Backup             string        `json:"backup" yaml:"backup"` // 是否支持审计模式
+	Script             string        `json:"script" yaml:"script"` // 自动更新主机列表脚本, 只有Remote为false时生效
 	Global             *ssh.Endpoint `json:"global" yaml:"global"` // global config
 	endpoint.Endpoints `json:"endpoints" yaml:"endpoints"`
 }

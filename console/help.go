@@ -11,9 +11,10 @@ func help() {
 	log.ConsoleWithGreen("")
 	for idx, v := range []string{
 		"输入 P/p 查看主机列表.",
-		"输入 G/g 查看主机分组",
-		"输入 E/e 批量执行命令",
+		"输入 G/g 查看主机分组.",
 		"输入 s + IP 直接登录.",
+		"输入 E/e 批量执行命令.",
+		"输入 U/u 批量上传文件.",
 		"输入 V/v 查看版本号.",
 		"输入 H/h 帮助.",
 		"输入 Q/q 退出.",

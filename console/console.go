@@ -2,6 +2,7 @@ package console
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -58,8 +59,35 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 		}
 		input = strings.TrimSpace(input)
 		switch {
+		case input == "U", input == "u":
+			endpoints, err := searchExt(rl, r.Endpoints, r.Groups)
+			if err != nil {
+				log.ConsoleWithRed("%v", err)
+				continue
+			}
+			for {
+				rl.SetPrompt(readline.StaticPrompt("upload> "))
+				log.ConsoleWithGreen(`输入"文件"批量上传.`)
+				input, err := rl.Readline()
+				if err != nil {
+					return err
+				}
+				input = strings.TrimSpace(input)
+				if isExit(input) {
+					log.ConsoleWithGreen("exit")
+					break
+				}
+				inputList := strings.Split(input, " ")
+				if len(inputList) != 2 {
+					log.ConsoleWithRed("参数数量不对")
+					continue
+				}
+				args := fmt.Sprintf("src=%s dest=%s", inputList[0], inputList[1])
+				batch := command.NewBatch(10, 120)
+				batch.Execute(endpoints, "copy", args)
+			}
 		case input == "E", input == "e": //execute command
-			endpoints, err := searchCommand(rl, r.Endpoints, r.Groups)
+			endpoints, err := searchExt(rl, r.Endpoints, r.Groups)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)
 				continue

@@ -122,7 +122,7 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 	}
 }
 
-func searchCommand(ins *readline.Instance, endpoints endpoint.Endpoints, groups endpoint.Groups) (endpoint.Endpoints, error) {
+func searchExt(ins *readline.Instance, endpoints endpoint.Endpoints, groups endpoint.Groups) (endpoint.Endpoints, error) {
 	var result endpoint.Endpoints
 
 	for {

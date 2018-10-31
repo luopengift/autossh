@@ -38,10 +38,13 @@ func (s *Copy) Parse(cmd string) error {
 
 // Run run
 func (s *Copy) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	defer endpoint.Close()
 	return nil, endpoint.Upload(s.Src, s.Dest, s.Mode)
 }
 
+// Close endpoint
+func (s *Copy) Close(endpoint *ssh.Endpoint) error {
+	return endpoint.Close()
+}
 func init() {
 	ModuleRegister("copy", NewCopy())
 }

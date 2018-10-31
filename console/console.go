@@ -100,7 +100,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				log.ConsoleWithRed("%v", err)
 				continue
 			}
-			endpoints := groups.Groups[groups.List[0]]
+			endpoints := groups[0].Endpoints
 			endpoints, err = searchEndpoints(rl, endpoints, true)
 			if err != nil {
 				log.ConsoleWithRed("%v", err)

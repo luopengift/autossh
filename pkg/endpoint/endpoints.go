@@ -24,24 +24,25 @@ func (eps Endpoints) Print() {
 }
 
 // Groups groups
-func (eps Endpoints) Groups(kind string) *Groups {
-	set := make(map[string]struct{})
-	g := &Groups{
-		Kind:   kind,
-		List:   []string{},
-		Groups: map[string]Endpoints{},
-	}
-	g.Kind = kind
+func (eps Endpoints) Groups(kind string) Groups {
+	var groups Groups
 	for _, endpoint := range eps {
-		if grp, ok := endpoint.Labels[kind]; ok {
-			g.Groups[grp] = append(g.Groups[grp], endpoint)
-			set[grp] = struct{}{}
+		if value, ok := endpoint.Labels[kind]; ok {
+			for _, group := range groups {
+				if value == group.Name {
+					group.Endpoints = append(group.Endpoints, endpoint)
+					break
+				}
+			}
+			groups = append(groups, Group{
+				Name:      value,
+				Endpoints: Endpoints{endpoint},
+			})
+		} else {
+			// group 不存在！
 		}
 	}
-	for key := range set {
-		g.List = append(g.List, key)
-	}
-	return g
+	return groups
 }
 
 // Search search
@@ -79,4 +80,12 @@ func (eps Endpoints) Less(i, j int) bool {
 // Swap implements sort.Interface
 func (eps Endpoints) Swap(i, j int) {
 	eps[i], eps[j] = eps[j], eps[i]
+}
+
+// Close close endpoints
+func (eps Endpoints) Close() error {
+	for _, ep := range eps {
+		ep.Close()
+	}
+	return nil
 }

@@ -29,10 +29,13 @@ func (s *Fetch) Name() string {
 
 // Run run
 func (s *Fetch) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	defer endpoint.Close()
 	return nil, endpoint.Download(s.Src, s.Dest)
 }
 
+// Close endpoint
+func (s *Fetch) Close(endpoint *ssh.Endpoint) error {
+	return endpoint.Close()
+}
 func init() {
 	ModuleRegister("fetch", &Fetch{})
 }

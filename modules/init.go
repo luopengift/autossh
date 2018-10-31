@@ -12,6 +12,7 @@ type Moduler interface {
 	Name() string
 	Parse(command string) error
 	Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error)
+	Close(endpoint *ssh.Endpoint) error
 }
 
 // Modules module manager map

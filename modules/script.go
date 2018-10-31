@@ -25,7 +25,6 @@ func (s *Script) Name() string {
 
 // Run run module
 func (s *Script) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	defer endpoint.Close()
 	filepath := path.Join("/tmp/.autossh", path.Base(s.Path))
 	if err := endpoint.Upload(s.Path, filepath, 0755); err != nil {
 		return nil, err
@@ -33,6 +32,10 @@ func (s *Script) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error
 	return endpoint.CmdOutBytes(filepath)
 }
 
+// Close endpoint
+func (s *Script) Close(endpoint *ssh.Endpoint) error {
+	return endpoint.Close()
+}
 func init() {
 	ModuleRegister("script", &Script{})
 }

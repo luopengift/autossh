@@ -15,7 +15,7 @@ type Runtime struct {
 	Date      string
 	IP        string
 	Endpoints endpoint.Endpoints
-	Groups    *endpoint.Groups
+	Groups    endpoint.Groups
 }
 
 func (r *Runtime) String() string {

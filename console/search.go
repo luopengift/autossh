@@ -1,7 +1,6 @@
 package console
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -35,7 +34,6 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints, one b
 		inputList := strings.Split(input, " ")
 		result = endpoints.Search(inputList...)
 	}
-	fmt.Println("searchEndpoint", result)
 	if !one {
 		return result, nil
 	}
@@ -49,9 +47,9 @@ func searchEndpoints(ins *readline.Instance, endpoints endpoint.Endpoints, one b
 	}
 }
 
-func searchGroups(ins *readline.Instance, groups *endpoint.Groups, one bool) (*endpoint.Groups, error) {
+func searchGroups(ins *readline.Instance, groups endpoint.Groups, one bool) (endpoint.Groups, error) {
 	groups.Print()
-	if len(groups.List) == 1 {
+	if len(groups) == 1 {
 		return groups, nil
 	}
 	ins.SetPrompt(readline.StaticPrompt("ID/主机组> "))
@@ -68,7 +66,7 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups, one bool) (*e
 		return nil, nil
 	}
 
-	var result *endpoint.Groups
+	var result endpoint.Groups
 	if strings.HasPrefix(input, "s ") {
 		result = groups.Match(strings.TrimPrefix(input, "s "))
 	} else {
@@ -80,7 +78,7 @@ func searchGroups(ins *readline.Instance, groups *endpoint.Groups, one bool) (*e
 		return result, nil
 	}
 
-	switch len(result.List) {
+	switch len(result) {
 	case 0:
 		return searchGroups(ins, groups, one)
 	case 1:
@@ -124,17 +122,36 @@ func searchUsers(ins *readline.Instance, users endpoint.Users) ([]string, error)
 	}
 }
 
-func searchCommand(ins *readline.Instance, endpoints endpoint.Endpoints, groups *endpoint.Groups) (endpoint.Endpoints, error) {
+func searchCommand(ins *readline.Instance, endpoints endpoint.Endpoints, groups endpoint.Groups) (endpoint.Endpoints, error) {
 	var result endpoint.Endpoints
-	groupList, err := searchGroups(ins, groups, false)
-	if err != nil {
-		return nil, err
+
+	for {
+		ins.SetPrompt(readline.StaticPrompt("Batch>"))
+		log.ConsoleWithGreen(`输入"P/g"选择主机列表, 按任意键确认.`)
+		input, err := ins.Readline()
+		if err != nil {
+			return nil, err
+		}
+		input = strings.TrimSpace(input)
+		switch {
+		case input == "P", input == "p":
+			endpointList, err := searchEndpoints(ins, endpoints, false)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, endpointList...)
+		case input == "G", input == "g":
+			groupList, err := searchGroups(ins, groups, false)
+			if err != nil {
+				return nil, err
+			}
+			for _, group := range groupList {
+				result = append(result, group.Endpoints...)
+			}
+		default:
+			log.ConsoleWithYellow("已选择的主机列表!")
+			result.Print()
+			return result, nil
+		}
 	}
-	result = append(result, groupList.Endpoints()...)
-	// endpointList, err := searchEndpoints(ins, endpoints, false)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// result = append(result, endpointList...)
-	return result, nil
 }

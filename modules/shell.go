@@ -24,8 +24,13 @@ func (s *Shell) Name() string {
 
 // Run run module
 func (s *Shell) Run(ctx context.Context, endpoint *ssh.Endpoint) ([]byte, error) {
-	defer endpoint.Close()
+
 	return endpoint.CmdOutBytes(s.Command)
+}
+
+// Close endpoint
+func (s *Shell) Close(endpoint *ssh.Endpoint) error {
+	return endpoint.Close()
 }
 
 func init() {

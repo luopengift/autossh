@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/luopengift/autossh/modules"
+	"github.com/luopengift/autossh/pkg/endpoint"
 	"github.com/luopengift/golibs/channel"
 	"github.com/luopengift/log"
 	"github.com/luopengift/ssh"
@@ -42,7 +43,7 @@ type Result struct {
 }
 
 // Execute Execute
-func (b *Batch) Execute(endpoints []*ssh.Endpoint, mod, args string) error {
+func (b *Batch) Execute(endpoints endpoint.Endpoints, mod, args string) error {
 	startTime := time.Now()
 	if len(endpoints) == 0 {
 		return fmt.Errorf(`主机数量为0, 请使用"-i/-files"指定`)

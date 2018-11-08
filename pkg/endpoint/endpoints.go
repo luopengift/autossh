@@ -23,25 +23,30 @@ func (eps Endpoints) Print() {
 	}
 }
 
-// Groups groups
+// Groups format Endpoints to Groups
 func (eps Endpoints) Groups(kind string) Groups {
-	var groups Groups
+	groups := Groups{&Group{
+		Name:      "_",
+		Endpoints: Endpoints{},
+	}}
 	for _, endpoint := range eps {
 		if value, ok := endpoint.Labels[kind]; ok {
-			for _, group := range groups {
-				if value == group.Name {
-					group.Endpoints = append(group.Endpoints, endpoint)
-					break
-				}
+			if group := groups.Find(value); group != nil {
+				group.Endpoints = append(group.Endpoints, endpoint)
+			} else {
+				groups = append(groups, &Group{
+					Name:      value,
+					Endpoints: Endpoints{endpoint},
+				})
 			}
-			groups = append(groups, Group{
-				Name:      value,
+		} else {
+			groups = append(groups, &Group{
+				Name:      "_",
 				Endpoints: Endpoints{endpoint},
 			})
-		} else {
-			// group 不存在！
 		}
 	}
+	fmt.Println(groups)
 	return groups
 }
 

@@ -16,7 +16,7 @@ type Group struct {
 }
 
 // Groups groups
-type Groups []Group
+type Groups []*Group
 
 // Len len
 func (grps Groups) Len() int {
@@ -58,4 +58,14 @@ func (grps Groups) Match(match string) Groups {
 		}
 	}
 	return result
+}
+
+// Find checkout name is in Groups.
+func (grps Groups) Find(name string) *Group {
+	for _, group := range grps {
+		if group.Name == name {
+			return group
+		}
+	}
+	return nil
 }

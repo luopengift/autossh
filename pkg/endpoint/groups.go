@@ -18,11 +18,6 @@ type Group struct {
 // Groups groups
 type Groups []*Group
 
-// Len len
-func (grps Groups) Len() int {
-	return len(grps)
-}
-
 // Print PrintGroups
 func (grps Groups) Print() {
 	log.ConsoleWithGreen(groupFormat, "[ID]", "组名称", "主机数量")
@@ -68,4 +63,19 @@ func (grps Groups) Find(name string) *Group {
 		}
 	}
 	return nil
+}
+
+// Len implements sort.Interface
+func (grps Groups) Len() int {
+	return len(grps)
+}
+
+// Less implements sort.Interface
+func (grps Groups) Less(i, j int) bool {
+	return grps[i].Endpoints.Len() < grps[j].Endpoints.Len()
+}
+
+// Swap implements sort.Interface
+func (grps Groups) Swap(i, j int) {
+	grps[i], grps[j] = grps[j], grps[i]
 }

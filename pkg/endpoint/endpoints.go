@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -46,7 +47,7 @@ func (eps Endpoints) Groups(kind string) Groups {
 			})
 		}
 	}
-	fmt.Println(groups)
+	sort.Sort(groups)
 	return groups
 }
 

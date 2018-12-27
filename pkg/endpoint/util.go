@@ -1,21 +1,8 @@
 package endpoint
 
 import (
-	"strconv"
 	"strings"
-
-	"github.com/luopengift/ssh"
 )
-
-// FindWithIdx find
-func FindWithIdx(endpoint *ssh.Endpoint, idx int, querys ...string) bool {
-	if len(querys) == 1 {
-		if querys[0] == strconv.Itoa(idx) {
-			return true
-		}
-	}
-	return endpoint.Find(querys...)
-}
 
 // FindOr find key is contains in one of querys.
 func FindOr(key string, querys ...string) bool {

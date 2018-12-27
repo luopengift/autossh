@@ -26,8 +26,8 @@ func Run(ctx context.Context, conf *config.Config) error {
 		fmt.Println(version.VERSION)
 		return nil
 	case params.Debug:
-		log.Display("params", params)
-		log.Display("config", conf)
+		log.Warn("params: %v", string(log.Dump(params)))
+		log.Warn("config: %v", string(log.Dump(conf)))
 		return nil
 	case len(os.Args) < 3: //登录交互模式
 		if conf.Remote { // 远程获取模式

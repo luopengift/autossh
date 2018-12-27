@@ -28,15 +28,13 @@ func (grps Groups) Print() {
 
 // Search search
 func (grps Groups) Search(querys ...string) Groups {
-	var result Groups
-	for index, group := range grps {
-		if len(querys) == 1 {
-			if querys[0] == strconv.Itoa(index) {
-				result = append(result, group)
-				continue
-			}
+	if len(querys) == 1 {
+		if id, err := strconv.Atoi(querys[0]); err == nil && id <= grps.Len() {
+			return Groups{grps[id]}
 		}
-
+	}
+	var result Groups
+	for _, group := range grps {
 		if Find(group.Name, querys...) {
 			result = append(result, group)
 		}

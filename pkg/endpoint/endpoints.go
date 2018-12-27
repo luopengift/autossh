@@ -52,10 +52,15 @@ func (eps Endpoints) Groups(kind string) Groups {
 }
 
 // Search search
-func (eps Endpoints) Search(search ...string) Endpoints {
-	result := Endpoints{}
-	for index, endpoint := range eps {
-		if FindWithIdx(endpoint, index, search...) {
+func (eps Endpoints) Search(querys ...string) Endpoints {
+	if len(querys) == 1 {
+		if id, err := strconv.Atoi(querys[0]); err == nil && id <= eps.Len() {
+			return Endpoints{eps[id]}
+		}
+	}
+	var result Endpoints
+	for _, endpoint := range eps {
+		if Find(endpoint.Name, querys...) || Find(endpoint.Host, querys...) || Find(endpoint.IP, querys...) {
 			result = append(result, endpoint)
 		}
 	}
@@ -65,8 +70,8 @@ func (eps Endpoints) Search(search ...string) Endpoints {
 // Match match
 func (eps Endpoints) Match(match string) Endpoints {
 	result := Endpoints{}
-	for index, endpoint := range eps {
-		if match == strconv.Itoa(index) || match == endpoint.Name || match == endpoint.Host || match == endpoint.IP {
+	for _, endpoint := range eps {
+		if match == endpoint.Name || match == endpoint.Host || match == endpoint.IP {
 			result = append(result, endpoint)
 		}
 	}

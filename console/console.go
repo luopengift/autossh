@@ -156,9 +156,9 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 			r.Super = true
 			log.ConsoleWithMagenta("进入Super模式!")
 		case input == "print config":
-			log.Display("config", conf)
+			log.Warn("config: %v", string(log.Dump(conf)))
 		case input == "print runtime":
-			log.Display("runtime", r)
+			log.Warn("runtime: %v", string(log.Dump(r)))
 		case strings.HasPrefix(input, "dump "): // 存储配置文件
 			if r.Super {
 				inputList := strings.Split(input, " ")

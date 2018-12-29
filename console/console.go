@@ -190,7 +190,7 @@ func StartConsole(ctx context.Context, conf *config.Config) error {
 				log.ConsoleWithRed("输入有误! 请输入 H/h 查看帮助.")
 				continue
 			}
-			endpoint := getEndpoint(inputList[1])
+			endpoint := ssh.NewEndpoint(inputList[1])
 			endpoint.Mask(conf.Global)
 			Login(endpoint, conf)
 		default:
